@@ -1,14 +1,15 @@
 # DOOM I + II Multiplayer Launcher - MS-DOS Style
 
-Enjoy a classic Doom I + II Multiplayer Launcher as if it was the year 1993.
+Relive the nostalgia of 1993 with this classic DOOM I + II Multiplayer Launcher, designed to emulate the authentic MS-DOS experience.
 
-How to use:
-1. Extract the content of the .zip file containing 2 files into your Doom folder.
-2. Start the Deathmanager exe file and go to setting.
-3. Add your Doom Source Port and the path to all your .wad and .pk3 files.
-4. Either host or join a Doom game.
+**Instructions for Use:**
 
-Note: The .exe file require the resources.neu file as a dependency.
+1. Extract the contents of the provided .zip file, which includes two files, into your DOOM folder.
+2. Launch the Deathmanager.exe file and navigate to the settings.
+3. Add your DOOM Source Port and specify the path to your .wad and .pk3 files.
+4. Choose to either host or join a DOOM multiplayer game.
+
+**Note:** The .exe file requires the resources.neu file as a dependency to function properly.
 
 (c) 2025 Satan Soft
 
