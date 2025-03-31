@@ -1,4 +1,4 @@
-# DOOM I + II Launcher – MS-DOS Style for Windows 10/11
+# DOOM I + II Launcher – MS-DOS Style for Windows 11
 
 Relive the nostalgia of 1993 with this classic DOOM I + II Multiplayer Launcher, designed to emulate the authentic MS-DOS experience.
 
