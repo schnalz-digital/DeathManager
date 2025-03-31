@@ -11,3 +11,5 @@ How to use:
 Note: The .exe file require the resources.neu file as a dependency.
 
 (c) 2025 Satan Soft
+
+![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/deathmanager-v1.666a.png)
