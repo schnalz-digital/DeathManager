@@ -1,4 +1,4 @@
-DOOM I + II Multiplayer Launcher - MS-DOS Style
+# DOOM I + II Multiplayer Launcher - MS-DOS Style
 
 Enjoy a classic Doom I + II Multiplayer Launcher as if it was the year 1993.
 How to use:
