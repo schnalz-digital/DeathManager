@@ -13,6 +13,4 @@ Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to
 
 **Note:** The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
-(c) 2025 Satan Soft
-
 ![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot.png)
