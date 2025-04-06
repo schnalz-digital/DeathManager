@@ -9,7 +9,7 @@ Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to
 3. Execute the `.exe` file to start the Launcher.
 4. At the top of the Launcher, specify your preferred DOOM Source Port (Zandronum or GZDOOM).
 5. Click on the `+` icon next to `Game WAD` and designate the path to your `.wad` file. Any addon WADs in `IWAD, PWAD, PK3, or DEH` format will be automatically detected within the `.wad` folder.
-Choose a map and press `Go!` to initiate gameplay.
+6. Choose a map and press `Go!` to initiate gameplay.
 
 **Note:** The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
