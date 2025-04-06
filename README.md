@@ -15,4 +15,4 @@ Choose a map and press `Go!` to initiate gameplay.
 
 (c) 2025 Satan Soft
 
-![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/deathmanager-v1.666a.png)
+![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot.png)
