@@ -2,8 +2,8 @@
 
 Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to emulate the authentic MS-DOS experience.
 
-**System requirements:**
-WebView2 (tested on Windows 11)
+**System requirements:**<br>
+- WebView2 (tested on Windows 11)
 
 **Instructions for Use:**
 
