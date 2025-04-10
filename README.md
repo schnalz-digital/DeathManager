@@ -1,6 +1,6 @@
 # DOOM I + II Launcher – MS-DOS Style
 
-Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to emulate the authentic MS-DOS experience.
+Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to emulate the authentic MS-DOS experience in Windows 11.
 
 **System requirements:**<br>
 - Windows 11: Comes with the WebView2 Runtime preinstalled.
