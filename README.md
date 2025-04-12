@@ -13,8 +13,8 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 5. Click on the `+` icon next to `Game WAD` and designate the path to your `.wad` files. Add-ons in `.iwad, .pwad, .pk3, or .deh` format within the `WAD` folder will be automatically detected.
 6. Choose a map and press `Go!` to frag demons.
 
-## Note
-The `.exe` file requires the `resources.neu` file as a dependency to function properly.
+> [!IMPORTANT]
+> The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
