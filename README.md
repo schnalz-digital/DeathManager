@@ -16,10 +16,10 @@ Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to
 
 **Note:** The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
-![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
+![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
 
 
-![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot2.png)
+![DeathLauncher - Adding WADs folder](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot2.png)
 
 
-![Screenshot of the DeathLauncher](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot3.png)
+![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot3.png)
