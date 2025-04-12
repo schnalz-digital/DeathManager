@@ -2,7 +2,8 @@
 Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to emulate the authentic MS-DOS experience from id Software's DeathManager—now on Windows 11.
 
 ## System requirements
-- Windows 11: Comes with the WebView2 Runtime preinstalled.
+- [x] Windows 11: Comes with the WebView2 Runtime preinstalled.
+- [ ] macOS 15: Coming soon.
 
 ## Instructions
 1. Download the [latest release here](https://github.com/schnalz-digital/deathmanager/releases/latest) on GitHub.
