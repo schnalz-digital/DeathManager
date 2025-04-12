@@ -1,21 +1,21 @@
 # DOOM I + II Launcher – MS-DOS Style
-
 Relive the nostalgia of 1993 with this classic DOOM I + II Launcher, designed to emulate the authentic MS-DOS experience in Windows 11.
 
-**System requirements:**<br>
+## System requirements
 - Windows 11: Comes with the WebView2 Runtime preinstalled.
 
-**Instructions for Use:**
-
+## Instructions for Use
 1. Download the [latest release here](https://github.com/schnalz-digital/deathmanager/releases/latest) on GitHub.
 2. Extract the contents of the provided `.zip` file, which includes two files, into your DOOM folder.
 3. Execute the `.exe` file to start the Launcher.
 4. At the top of the Launcher, specify your preferred DOOM Source Port (Zandronum or GZDOOM).
-5. Click on the `+` icon next to `Game WAD` and designate the path to your `.wad` files. Addons in `.IWAD, .PWAD, .PK3, or .DEH` format within the `WAD` folder will be automatically detected.
+5. Click on the `+` icon next to `Game WAD` and designate the path to your `.wad` files. Add-ons in `.iwad, .pwad, .pk3, or .deh` format within the `WAD` folder will be automatically detected.
 6. Choose a map and press `Go!` to frag demons.
 
-**Note:** The `.exe` file requires the `resources.neu` file as a dependency to function properly.
+## Note
+The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
+## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
 
 
