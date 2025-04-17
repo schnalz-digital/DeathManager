@@ -14,6 +14,9 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 5. Click on the `+` icon next to `Game WAD` and designate the path to your `.wad` files. Add-ons in `.iwad, .pwad, .pk3, or .deh` format within the `WAD` folder will be automatically detected.
 6. Choose a map and press `Go!` to frag demons.
 
+> [!IMPORTANT]
+> The `.exe` file requires the `resources.neu` file as a dependency to function properly.
+
 ## Instructions Linux
 Open Linux Shell and type 2 commands to install required library `webkit2gtk`:
 ```bash
@@ -22,9 +25,16 @@ sudo apt-get update
 ```bash
 sudo apt install libwebkit2gtk-4.1-0
 ```
+then run DM.EXE from shell:
+```bash
+./DM.EXE-linux_x64
+```
 
-> [!IMPORTANT]
-> The `.exe` file requires the `resources.neu` file as a dependency to function properly.
+## Instructions MacOS
+Open MacOS Shell and type 1 commands to allow DM.EXE (replace -mac_x64 with -mac_arm for ARM Processors):
+```bash
+sudo xattr -d -r com.apple.quarantine DM.EXE-mac_x64
+```
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
