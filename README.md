@@ -35,6 +35,10 @@ Open MacOS Shell and type 1 commands to allow DM.EXE (replace -mac_x64 with -mac
 ```bash
 sudo xattr -d -r com.apple.quarantine DM.EXE-mac_x64
 ```
+then run DM.EXE from shell:
+```bash
+./DM.EXE-mac_x64
+```
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
