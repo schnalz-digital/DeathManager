@@ -31,9 +31,12 @@ then run DM.EXE from shell:
 ```
 
 ## Instructions macOS
-Launch the macOS Terminal and execute the following command to allow DM.EXE. (replace -mac_arm with -mac_x64 for Intel processors):
+Launch the macOS Terminal and execute the following commands to allow DM.EXE. (replace -mac_arm with -mac_x64 for Intel processors):
 ```bash
 sudo xattr -d -r com.apple.quarantine DM.EXE-mac_arm
+```
+```bash
+chmod +x DM.EXE-mac_arm
 ```
 then run DM.EXE from shell:
 ```bash
