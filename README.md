@@ -17,6 +17,16 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 > [!IMPORTANT]
 > The `executable` file requires the `resources.neu` file as a dependency to function properly.
 
+## Instructions macOS
+Launch the macOS Terminal and execute the following commands to allow DM.EXE. (replace -mac_arm with -mac_x64 for Intel processors):
+```bash
+sudo xattr -d -r com.apple.quarantine DM.EXE-mac_arm
+```
+```bash
+chmod +x DM.EXE-mac_arm
+```
+Next, execute `DM.EXE-mac_arm` directly from the Terminal. Alternatively, append `.app` to the `DM.EXE-mac_arm` file and launch it via macOS Finder.
+
 ## Instructions Linux
 Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
 ```bash
@@ -30,15 +40,6 @@ Next, execute `DM.EXE-linux_x64` directly from shell:
 ./DM.EXE-linux_x64
 ```
 
-## Instructions macOS
-Launch the macOS Terminal and execute the following commands to allow DM.EXE. (replace -mac_arm with -mac_x64 for Intel processors):
-```bash
-sudo xattr -d -r com.apple.quarantine DM.EXE-mac_arm
-```
-```bash
-chmod +x DM.EXE-mac_arm
-```
-Next, execute `DM.EXE-mac_arm` directly from the Terminal. Alternatively, append `.app` to the `DM.EXE-mac_arm` file and launch it via macOS Finder.
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
