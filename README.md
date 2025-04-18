@@ -6,7 +6,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 - [x] Linux: libwebkit2gtk-4.1-0 required.
 - [x] macOS 15: Apple Silicon and Intel support.
 
-## Instructions - Getting Started
+## Getting Started
 1. Download the [latest release here](https://github.com/schnalz-digital/deathmanager/releases/latest) on GitHub.
 2. Extract the contents of the provided `.zip` file, which includes two files, into your DOOM folder.
 3. Run the `executable` file to start the Launcher.
