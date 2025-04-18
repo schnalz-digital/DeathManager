@@ -30,7 +30,7 @@ then run DM.EXE from shell:
 ./DM.EXE-linux_x64
 ```
 
-## Instructions MacOS
+## Instructions macOS
 Launch the macOS Terminal and execute the following command to allow DM.EXE. (replace -mac_x64 with -mac_arm for Apple Silicon Processors):
 ```bash
 sudo xattr -d -r com.apple.quarantine DM.EXE-mac_x64
