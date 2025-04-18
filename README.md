@@ -3,7 +3,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 
 ## System requirements
 - [x] Windows 11: Comes with the WebView2 Runtime preinstalled.
-- [x] Linux: libwebkit2gtk-4.1-0 required
+- [x] Linux: libwebkit2gtk-4.1-0 required.
 - [x] macOS 15: Apple Silicon and Intel support.
 
 ## Instructions
