@@ -1,7 +1,7 @@
 # DOOM I + II Launcher – MS-DOS Style
 Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to emulate the authentic MS-DOS experience from id Software's DeathManager—now on Windows 11, macOS 15+ and Linux.
 
-## System requirements
+## System Requirements
 - [x] Windows 11: Comes with the WebView2 Runtime preinstalled.
 - [x] Linux: libwebkit2gtk-4.1-0 required.
 - [x] macOS 15: Apple Silicon and Intel support.
