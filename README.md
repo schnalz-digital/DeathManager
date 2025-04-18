@@ -43,7 +43,7 @@ chmod +x DM.EXE-mac_arm
 Next, execute `DM.EXE-mac_arm` directly from the Terminal. Alternatively, append `.app` to the `DM.EXE-mac_arm` file and launch it via macOS Finder.
 
 > [!IMPORTANT]
-> If you encounter the error `resources.neu is missing`, download the `DM.EXE-win_x64.zip` package, package, extract its contents, and copy the `resources.neu` file into your macOS DOOM folder.
+> If you encounter the error `resources.neu is missing`, download the `DM.EXE-win_x64.zip` package, extract its contents, and copy the `resources.neu` file into your macOS DOOM folder.
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
