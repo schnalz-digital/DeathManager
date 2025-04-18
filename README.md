@@ -18,7 +18,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 > The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
 ## Instructions Linux
-Open Linux Shell and type 2 commands to install required library `webkit2gtk`:
+Launch the Linux shell and execute the following two commands to install the necessary `webkit2gtk`:
 ```bash
 sudo apt-get update
 ```
@@ -31,7 +31,7 @@ then run DM.EXE from shell:
 ```
 
 ## Instructions MacOS
-Open MacOS Terminal and type 1 commands to allow DM.EXE (replace -mac_x64 with -mac_arm for ARM Processors):
+Launch the macOS Terminal and execute the following command to allow DM.EXE. (replace -mac_x64 with -mac_arm for Apple Silicon Processors):
 ```bash
 sudo xattr -d -r com.apple.quarantine DM.EXE-mac_x64
 ```
