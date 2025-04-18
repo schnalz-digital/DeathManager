@@ -18,7 +18,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 > The `.exe` file requires the `resources.neu` file as a dependency to function properly.
 
 ## Instructions Linux
-Launch the Linux shell and execute the following two commands to install the necessary `webkit2gtk`:
+Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
 ```bash
 sudo apt-get update
 ```
