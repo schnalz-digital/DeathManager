@@ -31,7 +31,7 @@ then run DM.EXE from shell:
 ```
 
 ## Instructions MacOS
-Open MacOS Shell and type 1 commands to allow DM.EXE (replace -mac_x64 with -mac_arm for ARM Processors):
+Open MacOS Terminal and type 1 commands to allow DM.EXE (replace -mac_x64 with -mac_arm for ARM Processors):
 ```bash
 sudo xattr -d -r com.apple.quarantine DM.EXE-mac_x64
 ```
