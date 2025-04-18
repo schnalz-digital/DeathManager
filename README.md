@@ -4,7 +4,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 ## System requirements
 - [x] Windows 11: Comes with the WebView2 Runtime preinstalled.
 - [x] Linux: libwebkit2gtk-4.1-0 required
-- [ ] macOS 15: Apple Silicon and Intel support.
+- [x] macOS 15: Apple Silicon and Intel support.
 
 ## Instructions
 1. Download the [latest release here](https://github.com/schnalz-digital/deathmanager/releases/latest) on GitHub.
