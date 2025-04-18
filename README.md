@@ -15,7 +15,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 6. Choose a map and press `Go!` to frag demons.
 
 > [!IMPORTANT]
-> The `.exe` file requires the `resources.neu` file as a dependency to function properly.
+> The `executable` file requires the `resources.neu` file as a dependency to function properly.
 
 ## Instructions Linux
 Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
