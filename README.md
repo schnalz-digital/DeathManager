@@ -25,7 +25,7 @@ sudo apt-get update
 ```bash
 sudo apt install libwebkit2gtk-4.1-0
 ```
-Next, execute DM.EXE-linux_x64 directly from shell:
+Next, execute `DM.EXE-linux_x64` directly from shell:
 ```bash
 ./DM.EXE-linux_x64
 ```
@@ -41,9 +41,6 @@ sudo xattr -d -r com.apple.quarantine DM.EXE-mac_arm
 chmod +x DM.EXE-mac_arm
 ```
 Next, execute `DM.EXE-mac_arm` directly from the Terminal. Alternatively, append `.app` to the `DM.EXE-mac_arm` file and launch it via macOS Finder.
-
-> [!IMPORTANT]
-> If you encounter the error `resources.neu is missing`, download the `DM.EXE-win_x64.zip` package, extract its contents, and copy the `resources.neu` file into your macOS DOOM folder.
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/screenshot1.png)
