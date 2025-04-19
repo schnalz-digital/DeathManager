@@ -74,6 +74,7 @@ sudo apt install libwebkit2gtk-4.1-0
 
 
 ## Credits
+- Uschiklo (coder of the current DeathManager!)
 - John Carmack
 - John Romero (coder of the original DeathManager!)
 - Tom Hall
