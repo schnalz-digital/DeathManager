@@ -1,5 +1,5 @@
-# DOOM I + II Launcher – MS-DOS Style
-Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to emulate the authentic MS-DOS experience from id Software's DeathManager—now on Windows 11, macOS 15+ and Linux.
+# DOOM, Heretic and Hexen Launcher – MS-DOS Style
+Relive the nostalgia of 1993 with this classic DOOM, Heretic and Hexen Launcher, designed to emulate the authentic MS-DOS experience from id Software's DeathManager—now on Windows 11, macOS 15+ and Linux.
 
 ## Table of Contents
 - [System Requirements](#system-requirements)
