@@ -14,11 +14,12 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 - [x] Linux: libwebkit2gtk-4.1-0 required.
 
 ## Getting Started
+Follow these steps to get up and running:
 1. Download the [latest release here](https://github.com/schnalz-digital/deathmanager/releases/latest) on GitHub.
-2. Extract the contents of the provided `.zip` file, which includes two files, into your DOOM folder.
-3. Run the `executable` file to start the Launcher.
-4. At the top of the Launcher, click on `Choose DOOM Port` and specify the path to your preferred DOOM Source Port ([Zandronum](https://zandronum.com/download) or [GZDOOM](https://zdoom.org/downloads)).
-5. Click on the `+` icon next to `Game WAD` and designate the path to your `.wad` files. Add-ons in `.iwad, .pwad, .pk3, or .deh` format within the `WAD` folder will be automatically detected.
+2. **Extract** the contents of the provided `.zip` file, which includes two files, into your **DOOM folder**.
+3. **Run the executable** file to start the **Launcher**.
+4. At the top of the Launcher, click on `CHOOSE DOOM PORT ...` and specify the path to your preferred DOOM Source Port ([Zandronum](https://zandronum.com/download) or [GZDOOM](https://zdoom.org/downloads)).
+5. Click on the `+` **icon** next to `Game WAD` and designate the path to your `.wad` files. Add-ons in `.iwad, .pwad, .pk3, or .deh` format within the `WAD` folder will be **automatically detected**.
 6. Choose a map and press `Go!` to frag demons.
 
 > [!IMPORTANT]
@@ -32,25 +33,25 @@ Follow the steps below to allow and run `DM.EXE` on macOS.
 ```bash
 sudo xattr -d -r com.apple.quarantine
 ```
-After typing the command, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to append its full path, then press **Enter**.
+2. After typing the command, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to append its full path, then press **Enter**.
 
-2. Type the following command to make the file executable:
+3. Type the following command to make the file executable:
 ```bash
 chmod +x 
 ```
-Once again, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to complete the path, then press **Enter**. 
+4. Once again, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to complete the path, then press **Enter**. 
 
-3. To run the executable, **drag and drop** `DM.EXE-mac_arm` **into the Terminal** and press **Enter**.
+5. To run the executable, **drag and drop** `DM.EXE-mac_arm` **into the Terminal** and press **Enter**.
 
 ## Instructions for Linux
-Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
+1. Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
 ```bash
 sudo apt-get update
 ```
 ```bash
 sudo apt install libwebkit2gtk-4.1-0
 ```
-Next, execute `DM.EXE-linux_x64` directly from shell:
+2. Next, execute `DM.EXE-linux_x64` directly from shell:
 ```bash
 ./DM.EXE-linux_x64
 ```
