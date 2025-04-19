@@ -71,3 +71,10 @@ sudo apt install libwebkit2gtk-4.1-0
 
 
 ![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathlauncher-dm-flags.png)
+
+
+## Credits
+- John Carmack
+- John Romero (coder of the original DeathManager!)
+- Tom Hall
+- Adrian Carmack
