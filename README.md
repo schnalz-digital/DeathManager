@@ -58,10 +58,10 @@ sudo apt install libwebkit2gtk-4.1-0
 
 
 ## Screenshots
-![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/deathmanager-ui.png)
+![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-ui.png)
 
 
-![DeathLauncher - Adding WADs folder](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/deathmanager-wads.png)
+![DeathLauncher - Adding WADs folder](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-wads.png)
 
 
-![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/deathmanager/refs/heads/main/deathmanager-maps.png)
+![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
