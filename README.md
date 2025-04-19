@@ -1,6 +1,13 @@
 # DOOM I + II Launcher – MS-DOS Style
 Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to emulate the authentic MS-DOS experience from id Software's DeathManager—now on Windows 11, macOS 15+ and Linux.
 
+## Table of Contents
+- [System Requirements](#system-requirements)
+- [Getting Started](#getting-started)
+- [Instructions – macOS](#instructions-for-macos)
+- [Instructions – Linux](#instructions-for-linux)
+- [Screenshots](#screenshots)
+
 ## System Requirements
 - [x] Windows 11: Comes with the WebView2 Runtime preinstalled.
 - [x] macOS 15: Apple Silicon and Intel support.
@@ -17,7 +24,7 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 > [!IMPORTANT]
 > The `executable` file requires the `resources.neu` file as a dependency to function properly.
 
-## Instructions – macOS
+## Instructions for macOS
 Follow the steps below to allow and run `DM.EXE` on macOS.
 > **Note:** Replace `-mac_arm` with `-mac_x64` if you're using an Intel-based Mac.
 
@@ -35,7 +42,7 @@ Once again, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to
 
 3. To run the executable, **drag and drop** `DM.EXE-mac_arm` **into the Terminal** and press **Enter**.
 
-## Instructions – Linux
+## Instructions for Linux
 Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
 ```bash
 sudo apt-get update
