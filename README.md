@@ -67,3 +67,6 @@ sudo apt install libwebkit2gtk-4.1-0
 
 
 ![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
+
+
+![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathlauncher-dm-flags.png)
