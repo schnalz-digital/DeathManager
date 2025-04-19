@@ -21,19 +21,19 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 Follow the steps below to allow and run `DM.EXE` on macOS.
 > **Note:** Replace `-mac_arm` with `-mac_x64` if you're using an Intel-based Mac.
 
-1. Open the **Terminal** and paste the following command:
+1. Open the **Terminal** and type the following command:
 ```bash
 sudo xattr -d -r com.apple.quarantine
 ```
-2. After typing the command, drag and drop the DM.EXE-mac_arm file into the Terminal to append its full path, then press Enter.
+After typing the command, drag and drop the `DM.EXE-mac_arm` file into the Terminal to append its full path, then press Enter.
 
-3. Paste the following command to make the file executable:
+2. Type the following command to make the file executable:
 ```bash
 chmod +x 
 ```
 Once again, drag and drop the `DM.EXE-mac_arm` file into the Terminal to complete the path, then press Enter. 
 
-4. To run the executable, drag and drop `DM.EXE-mac_arm` into the Terminal and press Enter.
+3. To run the executable, drag and drop `DM.EXE-mac_arm` into the Terminal and press Enter.
 
 ## Instructions – Linux
 Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
