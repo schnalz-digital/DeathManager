@@ -4,16 +4,16 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-ui.png)
 
 ## Table of Contents
-- [System Requirements](#system-requirements)
+- [OS Compatibility](#os-compatibility)
 - [Getting Started](#getting-started)
 - [Instructions for macOS](#instructions-for-macos)
 - [Instructions for Linux](#instructions-for-linux)
 - [Screenshots](#screenshots)
 
-## System Requirements
-- [x] Windows 11: Comes with the WebView2 Runtime preinstalled.
-- [x] macOS 15: Apple Silicon and Intel support.
-- [x] Linux: libwebkit2gtk-4.1-0 required.
+## OS Compatibility
+- [x] Windows 11: Fully compatible with no reported issues.
+- [x] macOS 15: Application launches successfully; however, the source port is not starting.
+- [x] Linux: Application launches successfully; more testing necessary.
 
 ## Getting Started
 Follow these steps to get up and running:
