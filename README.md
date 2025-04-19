@@ -73,6 +73,17 @@ sudo apt install libwebkit2gtk-4.1-0
 ![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathlauncher-dm-flags.png)
 
 
+## Donate
+### Ko-Fi
+https://ko-fi.com/deathmanager
+
+### USDT (via Base network)
+> [!IMPORTANT]
+> Only send Base network assets to this address. Other assets will be lost forever.
+```bash
+0x21492311803D7df17A889D35A36F32DACE268C83
+```
+
 ## Credits
 - Uschiklo (coder of the current DeathManager!)
 - John Carmack
