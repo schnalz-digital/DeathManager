@@ -74,6 +74,8 @@ sudo apt install libwebkit2gtk-4.1-0
 
 
 ## Donate
+This project is the result of countless hours of dedication and passion. If you'd like to support our work and its future, your donation would be appreciated. Thank you!
+
 ### Ko-Fi
 https://ko-fi.com/deathmanager
 
