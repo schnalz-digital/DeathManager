@@ -25,15 +25,15 @@ Follow the steps below to allow and run `DM.EXE` on macOS.
 ```bash
 sudo xattr -d -r com.apple.quarantine
 ```
-After typing the command, drag and drop the `DM.EXE-mac_arm` file into the Terminal to append its full path, then press Enter.
+After typing the command, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to append its full path, then press **Enter**.
 
 2. Type the following command to make the file executable:
 ```bash
 chmod +x 
 ```
-Once again, drag and drop the `DM.EXE-mac_arm` file into the Terminal to complete the path, then press Enter. 
+Once again, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to complete the path, then press **Enter**. 
 
-3. To run the executable, drag and drop `DM.EXE-mac_arm` into the Terminal and press Enter.
+3. To run the executable, **drag and drop** `DM.EXE-mac_arm` **into the Terminal** and press **Enter**.
 
 ## Instructions – Linux
 Launch the Linux shell and execute the following commands to install the necessary `webkit2gtk`:
