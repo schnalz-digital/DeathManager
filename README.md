@@ -4,8 +4,8 @@ Relive the nostalgia of 1993 with this classic DOOM I & II Launcher, designed to
 ## Table of Contents
 - [System Requirements](#system-requirements)
 - [Getting Started](#getting-started)
-- [Instructions – macOS](#instructions-for-macos)
-- [Instructions – Linux](#instructions-for-linux)
+- [Instructions for macOS](#instructions-for-macos)
+- [Instructions for Linux](#instructions-for-linux)
 - [Screenshots](#screenshots)
 
 ## System Requirements
