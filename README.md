@@ -22,7 +22,8 @@ Follow these steps to get up and running:
 3. **Run the executable** file to start the **Launcher**.
 4. At the top of the Launcher, click on `CHOOSE DOOM PORT ...` and specify the path to your preferred DOOM Source Port ([Zandronum](https://zandronum.com/download) or [GZDOOM](https://zdoom.org/downloads)).
 5. Click on the `+` **icon** next to `Game WAD` and designate the path to your `.wad` files. Add-ons in `.iwad, .pwad, .pk3, or .deh` format within the `WAD` folder will be **automatically detected**.
-6. Choose a map and press `Go!` to frag demons.
+6. Optional: Set Deathmatch flags to your liking (e.g.,weapon stay, keep keys, etc.).
+7. Choose a map and press `Go!` to frag demons.
 
 > [!IMPORTANT]
 > The `executable` file requires the `resources.neu` file as a dependency to function properly.
