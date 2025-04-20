@@ -1,5 +1,5 @@
 # DOOM, Heretic and Hexen Launcher – MS-DOS Style
-<!-- ![NeutralionJS](https://img.shields.io/badge/Neutralionsjs-F89901?style=for-the-badge&logo=neutralinojs&logoColor=white) -->
+![NeutralionJS](https://camo.githubusercontent.com/cfc2c2bb66b05d1f50f23c6e8324a8d91bb403421d3e35eff1e10ab6e10ad32f/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f507265766965772d4638393930313f7374796c653d666c6174266c6f676f3d6e65757472616c696e6f6a73266c6f676f436f6c6f723d666666666666266c6162656c3d4e65757472616c696e6f6a73)
 
 
 DeathManager (DM) is a frontend for launching single- and multiplayer games of DOOM, Heretic and Hexen. Relive the nostalgia of 1993 with this classic launcher, designed to emulate the authentic MS-DOS experience from [id Software's DeathManager](https://doomwiki.org/wiki/DeathManager!). Now on Windows 11, macOS 15+ and Linux. 
