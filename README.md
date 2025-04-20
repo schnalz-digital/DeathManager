@@ -1,4 +1,6 @@
 # DOOM, Heretic and Hexen Launcher – MS-DOS Style
+![Release Version](https://img.shields.io/github/v/release/schnalz-digital/DeathManager)
+![Last Commit](https://img.shields.io/github/last-commit/schnalz-digital/DeathManager)
 ![NeutralionJS](https://img.shields.io/badge/-Neutralinojs-F89901?style=flat&logo=neutralinojs&logoColor=white)
 
 
