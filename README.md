@@ -20,7 +20,7 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 ## OS Compatibility
 - [x] Windows 11
 - [ ] macOS 15 - WIP
-- [ ] Linux - WIP
+- [x] Linux - WIP
 
 ## Getting Started
 Follow these steps to get up and running:
@@ -61,7 +61,11 @@ sudo apt-get update
 ```bash
 sudo apt install libwebkit2gtk-4.1-0
 ```
-2. Next, execute `DM.EXE-linux_x64` directly from shell:
+2. Type the following command to make the file executable:
+```bash
+chmod +x ./DM.EXE-linux_x64
+```
+3. Next, execute `DM.EXE-linux_x64` directly from shell:
 ```bash
 ./DM.EXE-linux_x64
 ```
