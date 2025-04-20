@@ -88,8 +88,8 @@ https://ko-fi.com/deathmanager
 ```
 
 ## Credits
-- Uschiklo (coder of the current DeathManager!)
+- Uschiklo (dev of current DeathManager!)
 - John Carmack
-- John Romero (coder of the original DeathManager!)
+- John Romero (dev of original DeathManager!)
 - Tom Hall
 - Adrian Carmack
