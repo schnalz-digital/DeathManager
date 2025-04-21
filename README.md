@@ -20,7 +20,7 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 ## OS Compatibility
 - [x] Windows 11
 - [ ] macOS 15 - WIP
-- [x] Linux - WIP
+- [x] Linux
 
 ## Getting Started
 Follow these steps to get up and running:
