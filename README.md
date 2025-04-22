@@ -98,7 +98,7 @@ https://ko-fi.com/deathmanager
 ```
 
 ## Credits
-- Uschiklo (dev of current DeathManager!)
+- [Uschiklo](https://github.com/uschiklo) (dev of current DeathManager!)
 - John Carmack
 - John Romero (dev of original DeathManager!)
 - Tom Hall
