@@ -14,8 +14,9 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 - [Getting Started](#getting-started)
 - [Instructions for macOS](#instructions-for-macos)
 - [Instructions for Linux](#instructions-for-linux)
-- [Screenshots](#screenshots)
 - [Donate](#donate)
+- [Screenshots](#screenshots)
+
 
 ## OS Compatibility
 - [x] Windows 11
@@ -70,6 +71,18 @@ chmod +x ./DM.EXE-linux_x64
 ./DM.EXE-linux_x64
 ```
 
+## Donate
+This project is the result of countless hours of dedication and passion. If you'd like to support our work and its future, your donation would be appreciated. Thank you!
+
+### Ko-Fi
+https://ko-fi.com/deathmanager
+
+### USDT (via Base network)
+> [!IMPORTANT]
+> Only send Base network assets to this address. Other assets will be lost forever.
+```bash
+0x21492311803D7df17A889D35A36F32DACE268C83
+```
 
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-ui.png)
@@ -83,19 +96,6 @@ chmod +x ./DM.EXE-linux_x64
 
 ![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathlauncher-dm-flags.png)
 
-
-## Donate
-This project is the result of countless hours of dedication and passion. If you'd like to support our work and its future, your donation would be appreciated. Thank you!
-
-### Ko-Fi
-https://ko-fi.com/deathmanager
-
-### USDT (via Base network)
-> [!IMPORTANT]
-> Only send Base network assets to this address. Other assets will be lost forever.
-```bash
-0x21492311803D7df17A889D35A36F32DACE268C83
-```
 
 ## Credits
 - [Uschiklo](https://github.com/uschiklo) (dev of current DeathManager!)
