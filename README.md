@@ -94,7 +94,7 @@ https://ko-fi.com/deathmanager
 ![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
 
 
-![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathlauncher-dm-flags.png)
+![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-dm-flags.png)
 
 
 ## Credits
