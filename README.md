@@ -100,6 +100,7 @@ https://ko-fi.com/deathmanager
 
 ## Credits
 - [Uschiklo](https://github.com/uschiklo) (dev of current DeathManager!)
+- [Jan K doomlist API](https://gitlab.com/jan_k/doomlist)
 - John Carmack
 - John Romero (dev of original DeathManager!)
 - Tom Hall
