@@ -43,7 +43,7 @@ Follow the steps below to allow and run `DM.EXE` on macOS.
 
 1. Open the **Terminal** and type the following command:
 ```bash
-sudo xattr -d -r com.apple.quarantine
+sudo xattr -d -r com.apple.quarantine 
 ```
 2. After typing the command, **drag and drop** the `DM.EXE-mac_arm` **file into the Terminal** to append its full path, then press **Enter**.
 
