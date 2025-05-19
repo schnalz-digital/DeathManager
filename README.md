@@ -4,7 +4,7 @@
 ![Issues open](https://img.shields.io/github/issues/schnalz-digital/DeathManager)
 ![NeutralinoJS](https://img.shields.io/badge/-Neutralinojs-F89901?style=flat&logo=neutralinojs&logoColor=white)
 [![Donate](https://img.shields.io/badge/Donate-Ko--fi-F16060.svg?logo=ko-fi&logoColor=white)](https://ko-fi.com/deathmanager)
-[![](https://dcbadge.limes.pink/api/server/ecr2wnRv?style=flat&compact=true)](https://discord.gg/ecr2wnRv)
+[![](https://dcbadge.limes.pink/api/server/a2jzqjPa?style=flat&compact=true)](https://discord.gg/a2jzqjPa)
 
 DeathManager (DM) is a frontend for launching single- and multiplayer games of DOOM, Heretic and Hexen. Relive the nostalgia of 1993 with this classic launcher, designed to emulate the authentic MS-DOS experience from [id Software's DeathManager](https://doomwiki.org/wiki/DeathManager!). Now on Windows 11, macOS 15+ and Linux. 
 
