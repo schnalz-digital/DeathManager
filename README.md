@@ -1,8 +1,8 @@
 # DOOM, Heretic and Hexen Launcher – MS-DOS Style
 ![Release Version](https://img.shields.io/github/v/release/schnalz-digital/DeathManager)
+![Downloads](https://img.shields.io/github/downloads/schnalz-digital/deathmanager/total)
 ![Last Commit](https://img.shields.io/github/last-commit/schnalz-digital/DeathManager)
 ![Issues open](https://img.shields.io/github/issues/schnalz-digital/DeathManager)
-![Downloads](https://img.shields.io/github/downloads/schnalz-digital/deathmanager/total)
 ![NeutralinoJS](https://img.shields.io/badge/-Neutralinojs-F89901?style=flat&logo=neutralinojs&logoColor=white)
 [![Donate](https://img.shields.io/badge/Donate-Ko--fi-F16060.svg?logo=ko-fi&logoColor=white)](https://ko-fi.com/deathmanager)
 [![](https://dcbadge.limes.pink/api/server/a2jzqjPa?style=flat&compact=true)](https://discord.gg/a2jzqjPa)
