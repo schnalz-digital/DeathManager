@@ -83,7 +83,7 @@ https://ko-fi.com/deathmanager
 > [!IMPORTANT]
 > Only send Base network assets to this address. Other assets will be lost forever.
 ```bash
-0x21492311803D7df17A889D35A36F32DACE268C83
+0x958Fb46E15573200B3f5D7574796c176D99252B5
 ```
 
 ## Screenshots
