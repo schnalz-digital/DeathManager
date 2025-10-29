@@ -1,0 +1,48 @@
+{
+  "applicationId": "DM.EXE",
+  "version": "1.666h",
+  "defaultMode": "window",
+  "documentRoot": "/DMEXESvelte/dist/",
+  "url": "/",
+  "applicationIcon": "./DMEXESvelte/src/assets/favicon.png",
+  "port": 3667,
+  "enableServer": true,
+  "enableNativeAPI": true,
+  "tokenSecurity": "one-time",
+  "logging": {
+    "enabled": false,
+    "writeToLogFile": false
+  },
+  "nativeAllowList": [
+    "app.*",
+    "filesystem.*",
+    "os.*",
+    "storage.*"
+  ],
+  "modes": {
+    "window": {
+      "enableInspector": false,
+      "title": "DM.EXE",
+      "width": 1000,
+      "height": 900,
+      "minWidth": 800,
+      "minHeight": 600,
+      "icon": "/DMEXESvelte/src/assets/favicon.png"
+    }
+  },
+  "cli": {
+    "binaryName": "DM.EXE",
+    "resourcesPath": "/DMEXESvelte/dist/",
+    "frontendLibrary": {
+      "patchFile": "/DMEXESvelte/index.html",
+      "devUrl": "http://localhost:3666",
+      "projectPath": "/DMEXESvelte/",
+      "initCommand": "npm install",
+      "devCommand": "npm run dev",
+      "buildCommand": "npm run build"
+    },
+    "extensionsPath": "/extensions/",
+    "binaryVersion": "6.0.0",
+    "clientVersion": "6.0.0"
+  }
+}

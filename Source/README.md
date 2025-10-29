@@ -21,6 +21,10 @@ Follow these steps to get up and running developing:
     > ```
 5. Goto Subfolder `/DM.EXE/` again and start the app with:
     > ```
+    > neu run -- -- --config-file=/neutralino-dev.config.json
+    > ```
+    or without developer console
+    > ```
     > neu run
     > ```
 
