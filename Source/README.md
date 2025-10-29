@@ -23,9 +23,9 @@ Follow these steps to get up and running developing:
     > ```
     > neu run -- -- --config-file=/neutralino-dev.config.json
     > ```
-    or without developer console
+      or without developer console
     > ```
     > neu run
     > ```
 
-This autoloads the Vite Svelte Server with autoreloading when changing HTML and Javascript while enutralinojs app is running.
+This autoloads the Vite Svelte Server with autoreloading when changing HTML and Javascript while neutralinojs app is running.
