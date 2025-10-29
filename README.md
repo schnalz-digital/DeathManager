@@ -12,6 +12,7 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-ui.png)
 
 ## Table of Contents
+- [Features](#features)
 - [OS Compatibility](#os-compatibility)
 - [Getting Started](#getting-started)
 - [Instructions for macOS](#instructions-for-macos)
@@ -19,6 +20,11 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 - [Donate](#donate)
 - [Screenshots](#screenshots)
 
+## Features
+- Supports GZDoom, Zandronum and other ports
+- Choose any Wad Folders and the game WADs will automatically be filterd
+  - The Addon WADs like mods etc will automatically be filtered depandant of the game WAD
+  - No need to find out which Addon WAD is compatible with which Game WAD
 
 ## OS Compatibility
 - [x] Windows 11
