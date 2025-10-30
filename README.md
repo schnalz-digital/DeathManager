@@ -110,6 +110,8 @@ https://ko-fi.com/deathmanager
 
 ![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-dm-flags.png)
 
+![DeathLauncher - Presets](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-Presets.png)
+
 ![DeathLauncher - Server Browser](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-server-browser.png)
 
 
