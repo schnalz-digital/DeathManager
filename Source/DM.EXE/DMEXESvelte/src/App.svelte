@@ -4,7 +4,7 @@ import * as neuMods from "./lib/neuMods.js"
 
 import { getIP, soundRestart, getZandronumServerList } from "./lib/shared.svelte.js";
 
-import Popup from "./lib/popup.svelte";
+import Popup from "./lib/popupFlags.svelte";
 import PopupWadFolders from "./lib/popupWadFolders.svelte";
 import PopupServerList from "./lib/popupServerList.svelte";
 import PopupPresets from "./lib/popupPresets.svelte";
@@ -378,19 +378,43 @@ function selectGameWAD(folderindex) {
   }
 
 
-    async function loadPresets(i) {
+    $inspect('addedflags: ', addedflags);
+
+    $inspect('presets: ', presets);
+    $inspect('wadcollection:', wadcollection);
+
+    async function loadPreset(i) {
+      // console.log('loading', presets);
+      
       if (presets && presets.length > 0)
       {
-          ({doomPortpath, wadfolders, selectedGameWAD, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort} = presets[i]);
-          
+
+          doomPortpath= presets[i].doomPortpath;
+          wadfolders= JSON.parse(JSON.stringify(presets[i].wadfolders));
+          //calculate the wadcollection new
+          await readWadFolders();
+          selectedGameWAD= presets[i].selectedGameWAD;
+          players= presets[i].players;
+          deathmatch= presets[i].deathmatch;
+          dmflags= JSON.parse(JSON.stringify(presets[i].dmflags));
+          map= presets[i].map;
+          skill= presets[i].skill;
+          joinIP= presets[i].joinIP;
+          joingame= presets[i].joingame;
+          doomNetPort= presets[i].doomNetPort;      
+        
           if (presets[i].addonwads)
             {
               for (let a = 0; a < presets[i].addonwads.length; a++) {
                 addonwads[a].selected = presets[i].addonwads[a].selected;
               }
             }
+
+          //calculate the var selectedDoomportflags new
+          setSelectedDoomPortFlags();
           //so the button flags is marked correctly after loading dmflags, addedflags has to be filled
           calcAddedFlags();
+          
           //reset all scroll lists
           folderindex=0;
           folderindexAddon=0;
@@ -549,7 +573,7 @@ function selectGameWAD(folderindex) {
       <!-- PRESET BUTTON and PRESET SELECTION POPUP -->
       <button class="presetbtn" style=" grid-column: 21 / span 10; grid-row: {20}" onmousedown="{()=>  {soundRestart(0);}}" onclick="{async ()=>{hideAllPopups(); showpresets = 1;}}">┤<span class="presetbtntext">☺ Preset</span>├</button>
       {#if showpresets}
-        <PopupPresets bind:showpresets {presets} {savePreset} {loadPresets} {changePresetName} {addPreset} {deletePreset}/>
+        <PopupPresets bind:showpresets {presets} {savePreset} {loadPreset} {changePresetName} {addPreset} {deletePreset}/>
       {/if}
     </div>
     </div>

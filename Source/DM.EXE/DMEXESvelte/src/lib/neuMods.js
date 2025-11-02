@@ -9,6 +9,10 @@ function onWindowClose() {
     Neutralino.app.exit();
 }
 
+Neutralino.events.on("windowClose", () => {
+    Neutralino.app.exit();
+});
+
 
 export async function showFileDialog() {
 
@@ -205,3 +209,4 @@ export async function load(key) {
     }
 
 }
+

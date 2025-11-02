@@ -10,4 +10,5 @@ const app = mount(App, {
 
 init();
 
+
 export default app

@@ -1,6 +1,6 @@
 <script>
 
-import { soundRestart } from "../lib/shared.svelte.js";
+import { soundRestart } from "./shared.svelte.js";
 
 let {
     showdeathmatchflags = $bindable(), 

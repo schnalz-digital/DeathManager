@@ -6,7 +6,7 @@ let {
     showpresets = $bindable(), 
     presets = $bindable(),
     savePreset,
-    loadPresets,
+    loadPreset,
     changePresetName,
     addPreset,
     deletePreset,
@@ -53,7 +53,7 @@ let {
 
 <div class="border-horizontal-popup" style="z-index: 30; grid-column: 6 / 46; grid-row: {2+12} / span 1"></div>
 <button class="h" style="z-index: 30; text-align:left; grid-column: {6+7} / span 5; grid-row: {15}"  onclick="{()=> {if (selectedpreset >= 0) { savePreset(selectedpreset); showpresets = 0; }  soundRestart(1); }}">Save</button>
-<button class="h" style="z-index: 30; text-align:left; grid-column: {7} / span 5; grid-row: {15}"  onclick="{()=> {if (selectedpreset >= 0) {loadPresets(selectedpreset); showpresets = 0; } soundRestart(1); }}">Load</button>
+<button class="h" style="z-index: 30; text-align:left; grid-column: {7} / span 5; grid-row: {15}"  onclick="{()=> {if (selectedpreset >= 0) {loadPreset(selectedpreset); showpresets = 0; } soundRestart(1); }}">Load</button>
 <!-- <button class="h" style="z-index: 30; text-align:left; grid-column: {8+6+6} / span 6; grid-row: {15}"  onclick="{()=> {soundRestart(1); deletePreset(selectedpreset); selectedpreset = -1;}}">Delete</button> -->
 <button class="h" style="z-index: 30; text-align:left; grid-column: {34+6} / span 5; grid-row: {15}"  onclick="{()=> {showpresets = 0; soundRestart(1); }}">Close</button>
 
