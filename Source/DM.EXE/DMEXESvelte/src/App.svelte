@@ -4,10 +4,11 @@ import * as neuMods from "./lib/neuMods.js"
 
 import { getIP, soundRestart, getZandronumServerList } from "./lib/shared.svelte.js";
 
-import Popup from "./lib/popupFlags.svelte";
+import PopupFlags from "./lib/popupFlags.svelte";
 import PopupWadFolders from "./lib/popupWadFolders.svelte";
 import PopupServerList from "./lib/popupServerList.svelte";
 import PopupPresets from "./lib/popupPresets.svelte";
+import PopupMaps from "./lib/popupMaps.svelte";
 
   $effect(async () => {
     pupblicIP = await getIP();
@@ -62,7 +63,7 @@ import PopupPresets from "./lib/popupPresets.svelte";
 
   let cursortop = $state(0), cursorleft = $state(0);
 
-  let c = (e) => {
+  let calcPixelCurser = (e) => {
     let rect = e.currentTarget.getBoundingClientRect();
     let x = e.clientX - rect.left; //x position within the element.
     let y = e.clientY - rect.top;  //y position within the element.
@@ -72,44 +73,48 @@ import PopupPresets from "./lib/popupPresets.svelte";
   }
 
 
-  function scrollup() {
+  function scrollupGameWAD() {
 	if (folderindex > 0) {
     folderindex--; 
     //scrollcursor has 4 chars height scrollspace. so devide all gamewads by 4 to fit all games in 4 scrollbarchars
     //folderindex +1 for the lower bounds. that gives up down scrolling smooth distance of cursor bounce
     scrollcursorGameWAD =  Math.floor( (folderindex+1) /(gamewads.length/4) )
-  }
+
+    soundRestart(0);
+    }
   // console.log(gamewads.length, folderindex/(gamewads.length/4));
-  soundRestart(0);
   }
 
-  function scrolldown() {
+  function scrolldownGameWAD() {
     if (folderindex+5 < gamewads.length-1){ 
       folderindex++; 
       //set +5 to check lower bounds for scrollcursor. otherwise the cursor bounces at end folderindexes
       //folderindex +4 for the upper bounds. that gives up down scrolling smooth distance of cursor bounce
       scrollcursorGameWAD = Math.floor( (folderindex+5) /(gamewads.length/4))
+
+      soundRestart(0);
     }
     // console.log(gamewads.length, folderindex/(gamewads.length/4));
-    soundRestart(0);
   }
 
   function scrollupAddons() {
     if (folderindexAddon > 0) {
       folderindexAddon--; 
       scrollcursorAddonWAD = Math.floor( (folderindexAddon+1) /(addonwads.length/4))
+
+      soundRestart(0);
     }
     // console.log(addonwads.length, folderindexAddon/(addonwads.length/4));
-    soundRestart(0);
   }
 
   function scrolldownAddons() {
     if (folderindexAddon+5 < addonwads.length-1) {
         folderindexAddon++; 
         scrollcursorAddonWAD = Math.floor( (folderindexAddon+5) /(addonwads.length/4) )
+
+        soundRestart(0);
     }
     // console.log(addonwads.length, folderindexAddon/(addonwads.length/4));  
-    soundRestart(0);
 }
 
   function scrollupMaps() {
@@ -117,8 +122,10 @@ import PopupPresets from "./lib/popupPresets.svelte";
       mapindex--;
       //devide by 7 cause 7 scrollbar charheights for cursor position
       scrollcursorLevels = Math.floor( (mapindex+2) /(gamewads[selectedGameWAD]?.maps.length/7))
+
+      soundRestart(0);
     }
-    soundRestart(0);
+    
   }
 
   function scrolldownMaps() {
@@ -131,21 +138,35 @@ import PopupPresets from "./lib/popupPresets.svelte";
     if (lastselectedAddonWAD == undefined && mapindex+8 < gamewads[selectedGameWAD]?.maps.length-1) {
       mapindex++;
       scrollcursorLevels = Math.floor( (mapindex+6) / (gamewads[selectedGameWAD].maps.length/7))
+
+      soundRestart(0);
     }
-    soundRestart(0);
-    
   }
 
   let mouseclickTimer = $state({});
 
   function clickInterval(scrollfunk) {
-  // clearInterval(mouseclickTimer);
+    if(mouseclickTimer) clearInterval(mouseclickTimer); // seems to help by spam clicking and draggin in the window timer goes forever error
+    
     scrollfunk();
-
-    mouseclickTimer = setInterval(()=>{
-       scrollfunk();
-    }, 200)
+    startInterval(130, scrollfunk);
   }
+
+  function startInterval(speed, scrollfunk) {
+
+    mouseclickTimer = setInterval(()=>{ 
+        clearInterval(mouseclickTimer);
+        if (speed > 36) speed -= 8;
+        startInterval(speed, scrollfunk);
+
+        scrollfunk();
+    }, speed)
+  }
+
+  function clearAllTimers() {
+    clearInterval(mouseclickTimer);
+  }
+
 
   let folderindex = $state(0);
   let selectedGameWAD = $state(0);
@@ -177,11 +198,7 @@ async function readWadFolders() {
 
 let wadfolders = $state([]);
 
-let wadcollection = $state(
-  [
-
-  ]
-)
+let wadcollection = $state([])
 
 let gamewads = $derived(wadcollection.filter(e=> e.iwad))
 // let addonwads =  $derived(wadcollection.filter(e=> !e.iwad))
@@ -441,11 +458,13 @@ function selectGameWAD(folderindex) {
 
 </script>
 
+<svelte:window onblur="{()=>clearAllTimers()}" onmouseout="{()=>clearAllTimers()}" onmouseleave="{()=>clearAllTimers()}" onmouseup="{()=>clearAllTimers()}" />
+
 <main>
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class="center" onmouseup="{()=>clearInterval(mouseclickTimer)}" bind:clientHeight="{hview}" bind:clientWidth="{vview}" style="display: grid;  height:100vh;">
+<div class="center"  bind:clientHeight="{hview}" bind:clientWidth="{vview}" style="display: grid;  height:100vh;">
 
-    <div class="scale" onmousemove="{e=>{c(e)}}" style="display: flex; justify-self: center; align-self: center; transform:translate({left}px,{top}px) scale({scale});">
+    <div class="scale" onmousemove="{e=>{calcPixelCurser(e)}}" style="display: flex; justify-self: center; align-self: center; transform:translate({left}px,{top}px) scale({scale});">
 
 		<div class="cell" style="z-index: 400;" style:left="{cursorleft}px"  style:top="{cursortop}px"> </div>
 
@@ -462,13 +481,18 @@ function selectGameWAD(folderindex) {
 			<button class="h4" style="grid-column: 13 / span 1; grid-row: {3}" onmousedown="{()=>  {soundRestart(0);}}" onclick="{async ()=>{hideAllPopups(); showwadfolders=1;}}">+</button>
 
 			<!-- START GAME WAD Auswahl -->
-			<button class="cellupdown" style="grid-column: 19; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollup)}}" onmouseleave="{()=>clearInterval(mouseclickTimer)}">↑</button>
-				<div class="cellgray" style="grid-column:  19; grid-row: {4+1} / {4+5}">░░░░</div>
+			<button class="cellupdown" style="grid-column: 19; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupGameWAD)}}" onmouseleave="{()=>clearAllTimers()}">↑</button>
+				<div class="cellgray" style="grid-column:  19; grid-row: {4+1} / {4+5}"> 
+            <span onmousedown="{()=>{clickInterval(scrollupGameWAD)}}">░</span>
+            <span onmousedown="{()=>{scrollcursorGameWAD > 1 ? clickInterval(scrollupGameWAD) : clickInterval(scrolldownGameWAD) }}">░</span>
+            <span onmousedown="{()=>{scrollcursorGameWAD > 2 ? clickInterval(scrollupGameWAD) : clickInterval(scrolldownGameWAD) }}">░</span>
+            <span onmousedown="{()=>{clickInterval(scrolldownGameWAD) }}">░</span>
+        </div>
         <div class="cellgray" style="grid-column:  19; grid-row: {4+1+ scrollcursorGameWAD}">▓</div>
-			<button class="cellupdown" style="grid-column: 19; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldown)}}" onmouseleave="{()=>clearInterval(mouseclickTimer)}">↓</button>
+			<button class="cellupdown" style="grid-column: 19; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownGameWAD)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>
 
       {#each Array(6) as rowWAD, i}
-        <button class="h4 { selectedGameWAD == folderindex+i ? 'hsel' : ''}" style="grid-column: {3} / span 16; grid-row: {4+i}" onclick="{()=>{selectGameWAD(folderindex+i);  soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldown() : scrollup()}"> {getButtonText(folderindex+i)}</button>
+        <button class="h4 { selectedGameWAD == folderindex+i ? 'hsel' : ''}" style="grid-column: {3} / span 16; grid-row: {4+i}" onclick="{()=>{selectGameWAD(folderindex+i);  soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownGameWAD() : scrollupGameWAD()}"> {getButtonText(folderindex+i)}</button>
       {/each}
 			<!-- ENDE GAME WAD Auswahl -->
 
@@ -476,11 +500,16 @@ function selectGameWAD(folderindex) {
 
 			<div class="h2" style="grid-column: 24 / 34; grid-row: {3}">Addon WAD</div>
 			
-			<button class="cellupdown" style="grid-column: 47; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupAddons)}}" onmouseleave="{()=>clearInterval(mouseclickTimer)}">↑</button>     
-				<div class="cellgray" style="grid-column:  47; grid-row: {4+1} / {4+5}">░░░░</div> 
+			<button class="cellupdown" style="grid-column: 47; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupAddons)}}" onmouseleave="{()=>clearAllTimers()}">↑</button>     
+				<div class="cellgray" style="grid-column:  47; grid-row: {4+1} / {4+5}">
+            <span onmousedown="{()=>{clickInterval(scrollupAddons)}}">░</span>
+            <span onmousedown="{()=>{scrollcursorAddonWAD > 1 ? clickInterval(scrollupAddons) : clickInterval(scrolldownAddons) }}">░</span>
+            <span onmousedown="{()=>{scrollcursorAddonWAD > 2 ? clickInterval(scrollupAddons) : clickInterval(scrolldownAddons) }}">░</span>
+            <span onmousedown="{()=>{clickInterval(scrolldownAddons) }}">░</span>        
+        </div> 
         <div class="cellgray" style="grid-column:  47; grid-row: {4+1+ scrollcursorAddonWAD}">▓</div>
                 <div class="cellblack" style="grid-column:  46; grid-row: {4} / {4+1+5}"></div>
-			<button class="cellupdown" style="grid-column: 47; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownAddons)}}" onmouseleave="{()=>clearInterval(mouseclickTimer)}">↓</button>    
+			<button class="cellupdown" style="grid-column: 47; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownAddons)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>    
 
       {#each Array(6) as rowWAD, i}
         <button class="h4 {addonwads[folderindexAddon+i]?.selected ? 'hsel' : ''}"   style="grid-column: {24} / span 22; grid-row: {4+i}" onclick="{()=>{selectAddonWAD(folderindexAddon+i);  soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownAddons() : scrollupAddons()}">{getButtonTextAddon(folderindexAddon+i)}</button>
@@ -508,7 +537,7 @@ function selectGameWAD(folderindex) {
         <button class="h {joingame ? "hdis" : 0}" style="grid-column: 24 / span 14; grid-row: {12}" onclick="{()=>{deathmatch=1; calcAddedFlags(); soundRestart(2);}}">(<span class="y">{deathmatch==1 ? '•' : ' '}</span>) DeathMatch</button>
 
         {#if showdeathmatchflags}
-          <Popup bind:showdeathmatchflags bind:dmflags bind:selectedDoomPortFlags {dmflagsbyport} bind:addedflags {calcAddedFlags}/>
+          <PopupFlags bind:showdeathmatchflags bind:dmflags bind:selectedDoomPortFlags {dmflagsbyport} bind:addedflags {calcAddedFlags}/>
         {/if}
 				
 			<div class="border-horizontal" style="grid-column: 2 / 50; grid-row: {13}"></div>
@@ -547,33 +576,7 @@ function selectGameWAD(folderindex) {
 
 			<!-- POPUP LEVEL SELECT -->
 			{#if showlevelselect}
-				
-			<div class="popup" style="grid-column: 6 / 46; grid-row: {2} / span 15"></div>
-			<div class="border-outerhoriz-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {2} / span 15"></div>
-			<div class="border-outervertic-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {2} / span 15"></div>
-
-			<div class="h1" style="z-index:10; grid-column: 7 / 45; grid-row: {3}">Select Level <span style="color: var(--text);"> { lastselectedAddonWAD?.entry || gamewads[selectedGameWAD]?.entry} </span> </div>
-
-			<div class="border-horizontal-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {4} / span 1"></div>
-            <!-- SCROLL BUTTONS FOR MAPS -->
-                <button class="cellupdown" style="z-index:11; grid-column: 43; grid-row: {5}" onmousedown="{()=>{clickInterval(scrollupMaps)}}" onmouseleave="{()=>clearInterval(mouseclickTimer)}">↑</button>     
-                <div class="cellgray" style="z-index:11; grid-column:  43; grid-row: {5+1} / {5+8}">░░░░░░░</div> 
-                <div class="cellgray" style="z-index:11; grid-column:  43; grid-row: {5+1+ scrollcursorLevels}">▓</div>
-                <button class="cellupdown" style="z-index:11; grid-column: 43; grid-row: {5+8}" onmousedown="{()=>{clickInterval(scrolldownMaps)}}" onmouseleave="{()=>clearInterval(mouseclickTimer)}">↓</button> 
-
-				{#if lastselectedAddonWAD}
-        {#each Array(9) as rowMap, i}
-          <button class="h" style="text-align:left; z-index: 10; grid-column: 7 / 44; grid-row: {5+i}"  onclick="{()=> {map =  lastselectedAddonWAD.maps[mapindex+i]; soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownMaps() : scrollupMaps()}">{lastselectedAddonWAD.maps[mapindex+i]}</button>
-        {/each}
-				{:else if gamewads[selectedGameWAD]}
-        {#each Array(9) as rowMap, i}
-          <button class="h" style="text-align:left; z-index: 10; grid-column: 7 / 44; grid-row: {5+i}"  onclick="{()=> {map =  gamewads[selectedGameWAD].maps[mapindex+i]; soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownMaps() : scrollupMaps()}"> {gamewads[selectedGameWAD].maps[mapindex+i]}</button>
-        {/each}
-				{/if}
-
-			<div class="border-horizontal-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {2+12} / span 1"></div>
-			<button class="h" style="z-index:10; text-align:left; grid-column: {6+33} / span 6; grid-row: {15}"  onclick="{()=> {showlevelselect = 0; soundRestart(1);;}}">Accept</button>
-			
+				<PopupMaps bind:showlevelselect {gamewads} {selectedGameWAD} {lastselectedAddonWAD} {scrollcursorLevels} {clickInterval} {scrollupMaps} {scrolldownMaps} {clearAllTimers} bind:map {mapindex}/>
 			{/if}
 
       <!-- PRESET BUTTON and PRESET SELECTION POPUP -->
