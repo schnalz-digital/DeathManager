@@ -369,11 +369,15 @@ function selectGameWAD(folderindex) {
 
   function addPreset(i, name) {
       presets[i] = {name, doomPortpath, wadfolders, selectedGameWAD, addonwads, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort}
+      presets[i].wadfolder = JSON.parse(JSON.stringify(wadfolders));
+      presets[i].dmflags= JSON.parse(JSON.stringify(dmflags));
       neuMods.save('presets', presets);
   }
 
   function savePreset(i) {
       presets[i] = {name: presets[i].name, doomPortpath, wadfolders, selectedGameWAD, addonwads, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort}
+      presets[i].wadfolder = JSON.parse(JSON.stringify(wadfolders));
+      presets[i].dmflags= JSON.parse(JSON.stringify(dmflags));
       neuMods.save('presets', presets);
   }
 
@@ -384,7 +388,7 @@ function selectGameWAD(folderindex) {
     $inspect('wadcollection:', wadcollection);
 
     async function loadPreset(i) {
-      // console.log('loading', presets);
+      console.log('loading', presets);
       
       if (presets && presets.length > 0)
       {
