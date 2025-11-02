@@ -370,6 +370,7 @@ function selectGameWAD(folderindex) {
   function addPreset(i, name) {
       presets[i] = {name, doomPortpath, wadfolders, selectedGameWAD, addonwads, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort}
       presets[i].wadfolder = JSON.parse(JSON.stringify(wadfolders));
+      presets[i].addonwads = JSON.parse(JSON.stringify(addonwads));
       presets[i].dmflags= JSON.parse(JSON.stringify(dmflags));
       neuMods.save('presets', presets);
   }
@@ -377,6 +378,7 @@ function selectGameWAD(folderindex) {
   function savePreset(i) {
       presets[i] = {name: presets[i].name, doomPortpath, wadfolders, selectedGameWAD, addonwads, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort}
       presets[i].wadfolder = JSON.parse(JSON.stringify(wadfolders));
+      presets[i].addonwads = JSON.parse(JSON.stringify(addonwads));
       presets[i].dmflags= JSON.parse(JSON.stringify(dmflags));
       neuMods.save('presets', presets);
   }
