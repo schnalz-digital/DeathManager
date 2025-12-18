@@ -22,11 +22,13 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 
 ## Features
 - Supports GZDoom, Zandronum and other ports
-- Choose any Wad Folders and the game WADs will automatically be filterd
+- Choose any Wad Folders and the game WADs will automatically be filtered
   - The Addon WADs like mods etc will automatically be filtered depandant of the game WAD
   - No need to find out which Addon WAD is compatible with which Game WAD
-- Choose Multiplayer Flags for GZDoom or Zandronum
-- Browse the Zandronum Server List and Join a Server
+- Choose Multiplayer Flags for GZDoom, Zandronum, Chocolate Doom
+- Browse the Zandronum, Chocolate or Odamex Server List and Join a Server
+- Download missing WADS with a click! to join the Server
+- Drag and Drop Addon Wads to Game Wads or change the order of the Selected wads
 - Choose a Map for the activated WAD File
   - The activated WAD File is read Bytewise to find all real maps inside the wad.
 - Use Presets to Save, Load, Rename, Delete Configurations
