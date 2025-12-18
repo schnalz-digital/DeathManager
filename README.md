@@ -28,6 +28,7 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 - Choose Multiplayer Flags for GZDoom, Zandronum, Chocolate Doom
 - Browse the Zandronum, Chocolate or Odamex Server List and Join a Server
 - Download missing WADS with a click! to join the Server
+  - Wads will be downloaded to the ./downloads folder
 - Drag and Drop Addon Wads to Game Wads or change the order of the Selected wads
 - Choose a Map for the activated WAD File
   - The activated WAD File is read Bytewise to find all real maps inside the wad.
@@ -106,6 +107,7 @@ https://ko-fi.com/deathmanager
 
 ![DeathLauncher - Adding WADs folder](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-wads.png)
 
+![DeathLauncher - Choosing the Order of Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/OrderWAD.PNG)
 
 ![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
 
