@@ -110,6 +110,12 @@ https://ko-fi.com/deathmanager
 Choose Game Wad, select Addon Wads and change the Order with drag and drop
 ![DeathLauncher - Choosing the Order of Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/select_wads_and_order.gif)
 
+
+You can Drag Addon Wad to Game Wad if you need it
+
+![DeathLauncher - Drag Addon Wads to Game Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/drag_wad_to_game_wad_reverse.gif)
+
+
 ![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
 
 
