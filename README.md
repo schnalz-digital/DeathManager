@@ -107,7 +107,8 @@ https://ko-fi.com/deathmanager
 
 ![DeathLauncher - Adding WADs folder](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-wads.png)
 
-![DeathLauncher - Choosing the Order of Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/OrderWAD.PNG)
+Choose Game Wad, select Addon Wads and change the Order with drag and drop
+![DeathLauncher - Choosing the Order of Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/select_wads_and_order.gif)
 
 ![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
 
