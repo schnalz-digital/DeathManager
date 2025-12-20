@@ -129,4 +129,4 @@ You can Drag Addon Wad to Game Wad if you need it
 ## Credits
 - [Uschiklo](https://github.com/uschiklo) (dev of current DeathManager!)
 - John Romero (dev of original DeathManager!)
-- [Jan K doomlist API](https://gitlab.com/jan_k/doomlist)
+
