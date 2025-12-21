@@ -151,7 +151,7 @@ export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, s
 
     // console.log(addonstext); // chocolate doom uses -server instead of -host
     let commandarray = [
-        `${doomportpath}`,
+        `"${doomportpath}"`,
         ` -iwad "${gamepath}"`,
         `${addonstext ? ' -file ' + addonstext : ''}`,
         `${dehfile ? ' -deh ' + dehfile : ''}`,
@@ -251,7 +251,7 @@ export async function download(filename, selectedwadhost = 0) {
         {
             console.log('download dir exists');
         }
-        let args = `--progress-bar -L -k -o ${downloadpath}/${filename} ${src} `;        
+        let args = `--progress-bar -L -k -o "${downloadpath}/${filename}" "${src}" `;        
         //
         // Run curl with any argument
         let progress = 0;
@@ -269,7 +269,9 @@ export async function download(filename, selectedwadhost = 0) {
         }
 
         // für mac und linux ist NL_PATH nötig, siehe neutralino js curl github plugin
-        let cmd = await Neutralino.os.spawnProcess(path + `/extensions/curl/curl ${args}`);
+        let cmd = await Neutralino.os.spawnProcess(`"` + path + `/extensions/curl/curl" ${args}`);
+        console.log(`"` + path + `/extensions/curl/curl" ${args}`);
+        
         // cmd.filename = filename;
 
         Neutralino.events.on('spawnedProcess', (e) => {
