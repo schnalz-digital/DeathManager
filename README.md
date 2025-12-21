@@ -21,12 +21,16 @@ DeathManager (DM) is a frontend for launching single- and multiplayer games of D
 - [Screenshots](#screenshots)
 
 ## Features
-- Supports GZDoom, Zandronum and other ports
+- Supports GZDoom, Zandronum, Chocolate and other ports
 - Choose any Wad Folders and the game WADs will automatically be filterd
   - The Addon WADs like mods etc will automatically be filtered depandant of the game WAD
   - No need to find out which Addon WAD is compatible with which Game WAD
-- Choose Multiplayer Flags for GZDoom or Zandronum
-- Browse the Zandronum Server List and Join a Server
+- Choose Multiplayer Flags for GZDoom, Zandronum or Chocolate
+- Browse the Zandronum, Chocolate or Odamex Server List and Join a Server
+- If there are missing WADs you can download them by clicking the green arrow right to the WAD
+- Change the Order of the WADs by Drag and Drop 
+- If you need an Addon WAD as a Game WAD, Drag and Drop from Addon List to the Game List.
+- Reverse it to remove the WAD
 - Choose a Map for the activated WAD File
   - The activated WAD File is read Bytewise to find all real maps inside the wad.
 - Use Presets to Save, Load, Rename, Delete Configurations
@@ -114,8 +118,12 @@ https://ko-fi.com/deathmanager
 
 ![DeathLauncher - Server Browser](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-server-browser.png)
 
+- Select Addon WADs and change order
+![DeathLauncher - Order Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/select_wads_and_order.gif)
+
+- Download WADs after selecting a Server to join
+![DeathLauncher - Order Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/download_wad.gif)
 
 ## Credits
 - [Uschiklo](https://github.com/uschiklo) (dev of current DeathManager!)
 - John Romero (dev of original DeathManager!)
-- [Jan K doomlist API](https://gitlab.com/jan_k/doomlist)
