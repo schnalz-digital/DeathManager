@@ -1,40 +1,128 @@
 <script>
 // @ts-nocheck
+// TODO 
+// add custom command line arguments (already in chocolate doom implemented via flags)
+// change shared flags of gzdoom and zandronum, make them individual
+// flags support odamex
+// scrolllists for flags, presets
+// gzdoom deathmatch defaults checken
+// zandronum register master server und broadcast als command line dazu
+// unknown doomports use flags of gzdoom?
+// permissions check evtl. bei ./downloads path erstellung? wegen linux und mac?
+// change gamewads and addonwads to states and not derived. use functions to update gamewads and addonwads
+// chocolate doom chosen flags, then change to deathmatch button makes error
+
+import { onMount } from 'svelte';
+
 import * as neuMods from "./lib/neuMods.js"
 
-import { getIP, soundRestart, getZandronumServerList } from "./lib/shared.svelte.js";
+import { getIP, soundRestart, getZandronumServerList, getChocolateServerList, getOdamexServerList } from "./lib/shared.svelte.js";
 
 import PopupFlags from "./lib/popupFlags.svelte";
 import PopupWadFolders from "./lib/popupWadFolders.svelte";
 import PopupServerList from "./lib/popupServerList.svelte";
 import PopupPresets from "./lib/popupPresets.svelte";
 import PopupMaps from "./lib/popupMaps.svelte";
+import PopupOrderwads from "./lib/popupOrderwads.svelte";
 
-  $effect(async () => {
-    pupblicIP = await getIP();
-    joinIP = await neuMods.getLocalIP();
-    //load all variables
-    doomPortpath = await neuMods.load('doomPortpath');
-    if (!doomPortpath) doomPortpath = {name: 'Choose Doom Port ...'}
-    //try to preselect gzoom or zandronum flags depends on filename of port.
-    setSelectedDoomPortFlags(doomPortpath.name)
-    
-    wadfolders = await neuMods.load('wadfolders');
-    //when app starts refresh (read) all files in folders new
-    wadfolders ? readWadFolders() : wadfolders = [];
 
-    //then calc the correct flags for addedflags variable for commandline.
-    calcAddedFlags();
+$effect(async () => {
+  // neuMods.testpk3();
+  pupblicIP = await getIP();
+  joinIP = await neuMods.getLocalIP();
+  //load all variables
+  doomPortpath = await neuMods.load('doomPortpath');
+  if (!doomPortpath) doomPortpath = {name: 'Choose Doom Port ...'}
+  //try to preselect gzoom or zandronum flags depends on filename of port.
+  setSelectedDoomPortFlags(doomPortpath.name)
+  
+  wadfolders = await neuMods.load('wadfolders');
+  //when app starts refresh (read) all files in folders new
+  wadfolders ? readWadFolders() : wadfolders = [];
 
-    presets = await neuMods.load('presets');
-    if (!presets) presets = [];
+  selectedGameWAD = await neuMods.load('selectedGameWAD');
+  if (!selectedGameWAD) selectedGameWAD = 0;
+  folderindex = selectedGameWAD > 5 ? (selectedGameWAD -5) : 0;  // -5 so the selected gamewad si always at the bottom of the list visible
 
-    let refreshservers = setInterval( async () => {
-      serverlist = await getZandronumServerList();
-    }, 30000);
-    serverlist = await getZandronumServerList();
-    
-  })
+
+  players = await neuMods.load('players');
+  if (!players) players = 1;
+
+  deathmatch = await neuMods.load('deathmatch');
+  if (!deathmatch) deathmatch = 0;
+
+  map = await neuMods.load('map');
+  if (!map) map = '';
+
+  //loading dmflags from save. if save is an older version of DMFLAGS, find out and dont overwrite dmflags with save!
+  //otherwise the dmflags would be the old version and missing flags
+  let tempdmflags = await neuMods.load('dmflags');
+  if (tempdmflags) 
+  {
+    testloadedDMFlags(tempdmflags);
+
+    // let compareflags =  JSON.parse(JSON.stringify(tempdmflags));
+    // let missingflag = 0;
+    // for (let i = 0; i < dmflags.length; i++) {
+    //   let found = compareflags.some(e=> e.cvar == dmflags[i].cvar && e.value == dmflags[i].value && e.name == dmflags[i].name && dmflags[i].default == e.default)
+    //   if (found == false) 
+    //   {missingflag = 1; break;}
+    // }
+    // if (missingflag) 
+    //   console.log('old saved dmflags object version');
+    // else
+    //   dmflags = JSON.parse(JSON.stringify(tempdmflags));
+  }
+
+  //then calc the correct flags for addedflags variable for commandline.
+  calcAddedFlags();
+
+  presets = await neuMods.load('presets');
+  if (!presets) presets = [];
+
+
+  document.addEventListener('curlProgress', function(e) {
+    // console.log(addonwads);
+    // console.log(e.detail.filename, e.detail.progress);
+    let i = selectedaddonwads.findIndex(el=>el.entry == e.detail.filename)
+    if (i != -1)
+    {
+      selectedaddonwads[i].progress = e.detail.progress;
+
+      if (e.detail.progress == 'done' )
+      {
+        selectedaddonwads[i].path = e.detail.path;
+
+        wadcollection.push(selectedaddonwads[i]);
+        //sort the new downloaded wad for addonwads list
+        wadcollection.sort((a, b) => a.entry.toLowerCase() > b.entry.toLowerCase() ? 1 : a.entry.toLowerCase() == b.entry.toLowerCase() ? a.dupl=1 : -1);
+
+        //timeout damit man noch grünen download balken sehen kann bei kleinen dateien
+        setTimeout(() => {
+          selectedaddonwads[i].progress = 0;
+          selectedaddonwads[i].missing = 0;
+          selectedaddonwads[i].download = 0;
+        }, 500);
+      }
+    }
+    else console.log('download filename not found in addonwads');
+  });
+
+})
+
+function testloadedDMFlags(tempdmflags) {
+    let compareflags =  JSON.parse(JSON.stringify(tempdmflags));
+    let missingflag = 0;
+    for (let i = 0; i < dmflags.length; i++) {
+      let found = compareflags.some(e=>e.deathmatch == dmflags[i].deathmatch && e.port == dmflags[i].port && e.cvar == dmflags[i].cvar && e.value == dmflags[i].value && e.name == dmflags[i].name && dmflags[i].default == e.default)
+      if (found == false) 
+      {missingflag = 1; break;}
+    }
+    if (missingflag) 
+      console.log('old saved dmflags object version');
+    else
+      dmflags = JSON.parse(JSON.stringify(tempdmflags));  
+}
 
   let cols = 50, rows = 20;
   let hwindow = rows*16;
@@ -42,6 +130,7 @@ import PopupMaps from "./lib/popupMaps.svelte";
 
   let hview = $state(1);
   let vview = $state(1);
+
   let scale = $derived.by( () => {
     if (vview/hview >= 4/3)       //wichtig falls window horizontal breiter als vertikal, dann bastel scalefaktor nur mit höhe
       return (hview / hwindow -0.1);
@@ -71,7 +160,7 @@ import PopupMaps from "./lib/popupMaps.svelte";
     cursorleft = Math.max( Math.floor(x/(scale*cellw))*cellw, 0 );
     cursortop= Math.max( Math.floor(y/(scale*cellh))*cellh, 0 ); 
   }
-
+  
 
   function scrollupGameWAD() {
 	if (folderindex > 0) {
@@ -117,33 +206,8 @@ import PopupMaps from "./lib/popupMaps.svelte";
     // console.log(addonwads.length, folderindexAddon/(addonwads.length/4));  
 }
 
-  function scrollupMaps() {
-    if (mapindex > 0){ 
-      mapindex--;
-      //devide by 7 cause 7 scrollbar charheights for cursor position
-      scrollcursorLevels = Math.floor( (mapindex+2) /(gamewads[selectedGameWAD]?.maps.length/7))
-
-      soundRestart(0);
-    }
-    
-  }
-
-  function scrolldownMaps() {
-    // lastselectedAddonWAD is Object of WAD with maps[] array. if its not 0 then an AddonWAD is selected...
-    if (lastselectedAddonWAD && mapindex+8 < lastselectedAddonWAD.maps.length-1){ 
-      mapindex++;
-      scrollcursorLevels = Math.floor( (mapindex+6) / (lastselectedAddonWAD.maps.length/7))
-    }
-    // else lastselectedAddonWAD is undefined, so no AddonWAD was filtered as selected but a GamesWAD is valid. 
-    if (lastselectedAddonWAD == undefined && mapindex+8 < gamewads[selectedGameWAD]?.maps.length-1) {
-      mapindex++;
-      scrollcursorLevels = Math.floor( (mapindex+6) / (gamewads[selectedGameWAD].maps.length/7))
-
-      soundRestart(0);
-    }
-  }
-
-  let mouseclickTimer = $state({});
+  // timer for scrolling acceleration when mouse button is held down
+  let mouseclickTimer = $state(0);
 
   function clickInterval(scrollfunk) {
     if(mouseclickTimer) clearInterval(mouseclickTimer); // seems to help by spam clicking and draggin in the window timer goes forever error
@@ -153,7 +217,6 @@ import PopupMaps from "./lib/popupMaps.svelte";
   }
 
   function startInterval(speed, scrollfunk) {
-
     mouseclickTimer = setInterval(()=>{ 
         clearInterval(mouseclickTimer);
         if (speed > 36) speed -= 8;
@@ -168,16 +231,6 @@ import PopupMaps from "./lib/popupMaps.svelte";
   }
 
 
-  let folderindex = $state(0);
-  let selectedGameWAD = $state(0);
-
-  let folderindexAddon = $state(0);
-//   let selectedAddonWAD = $state(-1);
-
-function spliceWadFolders(i) {
-  wadfolders.splice(i,1);
-}
-
 async function onWadFoldersAdd(i) {
   //parameter i comes from the UI Buttons index of 8 fixed Array buttons. this info is needed to know which row was clicked and will be overwritten if filled
   let newfolder = await neuMods.showFolderDialogAddFolder();
@@ -190,24 +243,113 @@ async function onWadFoldersAdd(i) {
   neuMods.save('wadfolders', wadfolders);
 }
 
-async function readWadFolders() {
-  wadfolders = wadfolders.filter(e=>e != ""); // delete all empty lines caused by folderdialog no folder selected 
-  wadcollection = await neuMods.readFolderPaths(wadfolders)
-  neuMods.save('wadfolders', wadfolders);
+//remove entry at index i from wadfolders array
+function spliceWadFolders(i) {
+  wadfolders.splice(i,1);
 }
+
+async function readWadFolders(presetwadcollection=[]) {
+  wadfolders = wadfolders.filter(e=>e != ""); // delete all empty lines caused by folderdialog no folder selected 
+  neuMods.save('wadfolders', wadfolders);
+
+  wadcollection = await neuMods.readFolderPaths(wadfolders);
+  wadcollection ? 0 : wadcollection = [];
+  //-----READ WADCOLLECTION Storage, CHECK IF IT EXISTS IN READ FOLDERS ON HDD, OVERWRITE SELECTED AND IWADFAKE PROPERTY ONLY!------
+  let tempwadcollection = [];
+  if (presetwadcollection.length > 0)
+    tempwadcollection = presetwadcollection;
+  else
+    tempwadcollection = await neuMods.load('wadcollection');
+  if (tempwadcollection)
+    for (let i = 0; i < tempwadcollection.length; i++) {
+      let entry = tempwadcollection[i].entry;
+      let path = tempwadcollection[i].path;
+      //path und entry sind eindeutig für einen wadcollection eintrag, also nutze sie um den index im neuen wadcollection zu finden
+      let f = wadcollection.findIndex(e=> e.entry == entry && e.path == path);
+      // console.log(wadcollection[f].iwadfake, tempwadcollection[i].iwadfake);
+      if (f != -1)
+        {
+           wadcollection[f].selected = tempwadcollection[i].selected ;
+           wadcollection[f].iwadfake = tempwadcollection[i].iwadfake ;
+        }
+    }
+
+}
+
+
+let showwadfolders = $state(0);
+let showlevelselect = $state(0);
+let showserverlist = $state(0);
+let showdeathmatchflags = $state(0);
+let showpresets = $state(0);
+
+let doomPortpath = $state({name: 'Choose Doom Port ...'})
+let players = $state(1)
+let deathmatch = $state(0)
+let pupblicIP = $state('0.0.0.0')
+
+let joinIP = $state('192.168.0.1')
+let joingame = $state(0);
+
+let doomNetPort = $state('10666');
+let skill = $state(3);
+let skillactive = $state(0);
+let map = $state('');
+let serverlist = $state([]);
+let presets = $state([]);
+
+//drag n drop variables to prevent drop on same list like addonwads or gamewads list
+let draggamewad = $state(0);
+let dragaddonwad = $state(0);
+
+let folderindex = $state(0);      //for gamewad list scrolling
+let scrollcursorGameWAD = $state(0);
+let selectedGameWAD = $state(0);
+
+let folderindexAddon = $state(0); //for addonwad list scrolling
+let scrollcursorAddonWAD = $state(0);
+let lastselectedAddonWAD = $state(0);
+
+let folderindexOrderwads = $state(0);
+let scrollcursorOrderwads = $state(0);
+
+let mapindex = $state(0);         //for level list scrolling  
+let scrollcursorLevels = $state(0);
+
+let serverindex = $state(0);
+let scrollcursorServers = $state(0);
 
 let wadfolders = $state([]);
 
 let wadcollection = $state([])
 
-let gamewads = $derived(wadcollection.filter(e=> e.iwad))
-// let addonwads =  $derived(wadcollection.filter(e=> !e.iwad))
+let gamewads = $derived.by(()=>wadcollection.filter(e=> e.iwad || e.iwadfake))
+
+let showorderwads = $state(0);
+let selectedaddonwads = $state([]);
+
+function updateSelectedaddonwads() {
+  let selected = addonwads.filter(e=> e.selected);
+  selectedaddonwads = selectedaddonwads.filter(e=>e.selected);
+  for (let i = 0; i < selected.length; i++) {
+    //if a new addonwad is selected in the addon list, and its not alredy in the selectedaddonwads order. then add it to the array
+    //this keeps the order of already added wads to the order list
+    const a = selectedaddonwads.findIndex(e=> e.entry?.toLowerCase() == selected[i].entry?.toLowerCase());
+    if (a == -1)
+      selectedaddonwads.push(selected[i]);
+  }
+}
+  // $inspect('selectedaddonwads: ', selectedaddonwadsa);
+
+
 let addonwads =  $derived.by(()=>
 {
   //choose the addon wads woth same MapName Format like the GameWad has. 
   //if the file is a DEH or PK3 then also inlude it always!
   let mapname = gamewads[selectedGameWAD]?.maps[0];
-  let alladdonwads = wadcollection.filter(e=> !e.iwad);
+  let alladdonwads = wadcollection.filter(e=> !e.iwad && !e.iwadfake);
+  // return alladdonwads; //used for other addonwads list filter. grey out addon wads via checkmapformat()
+  // or this method: dont show addon wads incompatible map format at all:...
   let wads = []
   for (const element of alladdonwads) { 
     //inlude DEH and PK3 always:
@@ -220,25 +362,139 @@ let addonwads =  $derived.by(()=>
       //otherwise include ExMy Map Format ADdons like Doom1
       else if (mapname?.includes('E') && element.maps[0].includes('E'))   //mapname?... important because mapname can be undefined if no gamewads exist yet.
         wads.push(element);
+      else if (!mapname)   //if iwadfake is selected, include all addonwads
+        wads.push(element);
     }
   }
   return wads;
+});
+
+
+
+//make addonwads grey if the selected gamewad has another mapformat 
+//or allow all if selected gamewad has no maps (deh or pk3) or iwadfake is selected
+// use this then for button class: {checkMapformat(addonwads[folderindexAddon+i]) ? '' : ' hdis '}
+/*
+function checkMapformat(wad) {
+  let mapformat = gamewads[selectedGameWAD]?.maps[0];
+  if (!mapformat) return true; //when iwadfake or no maps could be read out of iwad is selected, allow all addonwads
+  if (mapformat?.includes('MAP') && wad?.maps[0]?.includes('MAP') || 
+        wad?.maps?.length == 0 ||
+        mapformat?.includes('E') && wad?.maps[0]?.includes('E')) 
+      return true;
+}
+*/
+
+function changeDMFlagDefaults() {
+  let a = dmflags.find(e=>e.value == 4 && e.port == selectedDoomPortFlags);
+  a.selected = true;
+  
+  a = dmflags.find(e=>e.value == 4096 && e.port == selectedDoomPortFlags);
+  a.selected = true;
+
+  a = dmflags.find(e=>e.value == 16384 && e.port == selectedDoomPortFlags);
+  a.selected = true;
+
+  a = dmflags.find(e=>e.value == 128 && e.port == selectedDoomPortFlags);
+  a.selected = true;
+}
+
+function resetFlagDefaults() {
+  dmflags.forEach(e=>e.selected = e.default);
+}
+
+let dmflags = $state([]);
+dmflags = [
+  //dmflags
+  {port:'GZDoom', cvar: 'dmflags', value: 16384, name: 'Items respawn', default: false, selected: false  },
+  {port:'GZDoom', cvar: 'dmflags', value: 65536, name: 'Allow jump', default: true, selected: true  },
+  {port:'GZDoom', cvar: 'dmflags', value: 4, name: '(DM) Weapons Stay', deathmatch:1, default: false, selected: false  },
+  {port:'GZDoom', cvar: 'dmflags', value: 128, name: '(DM) Respawn farthest away', deathmatch:1, default: false, selected: false  },
+  {port:'GZDoom', cvar: 'dmflags', value: 4096, name: 'No monsters', default: false, selected: false  },
+  {port:'GZDoom', cvar: 'dmflags', value: 33554432, name: '(coop) Keep keys ', deathmatch:0, default: true, selected: true  },
+  {port:'GZDoom', cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons ', deathmatch:0, default: true, selected: true },
+
+  {port:'Zandronum', cvar: 'dmflags', value: 16384, name: 'Items respawn', default: false, selected: false  },
+  {port:'Zandronum', cvar: 'dmflags', value: 65536, name: 'Allow jump', default: true, selected: true  },
+  {port:'Zandronum', cvar: 'dmflags', value: 4, name: '(DM) Weapons Stay', deathmatch:1, default: false, selected: false  },
+  {port:'Zandronum', cvar: 'dmflags', value: 128, name: '(DM) Respawn farthest away', deathmatch:1, default: false, selected: false  },
+  {port:'Zandronum', cvar: 'dmflags', value: 4096, name: 'No monsters', default: false, selected: false  },
+  {port:'Zandronum', cvar: 'dmflags', value: 33554432, name: '(coop) Keep keys ', deathmatch:0, default: true, selected: true  },
+  {port:'Zandronum', cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons ', deathmatch:0, default: true, selected: true },
+  //dmflags2
+  {port:'GZDoom', cvar: 'dmflags2', value: 134217728, name: 'Big powerups respawn', default: false, selected: false  },
+  {port:'Zandronum', cvar: 'dmflags', value: 524288, name: 'Big powerups respawn', default: false, selected: false  },
+  //dmflags3 - zandronum has zadmflags
+  {port:'GZDoom', cvar: 'dmflags3', value: 2, name: '(coop) Share keys ', deathmatch:0, default: false, selected: false  },
+  {port:'Zandronum', cvar: 'zadmflags', value: 64, name: '(coop) Share keys ', deathmatch:0, default: false, selected: false  },
+  {port:'Chocolate', cvar: 'commandline', value: '-nomonsters', name:'No Monsters', default:false, selected:false},
+  {port:'Chocolate', cvar: 'commandline', value: '-altdeath', name:'Respawn Weapons and Items (DM2.0)', default:false, selected:false}
+    
+]
+
+let selectedDoomPortFlags = $state('GZDoom');
+
+//change for dmflags doomport tabs in flags menu. try to preselect depends on filename of port.
+function setSelectedDoomPortFlags() {
+  if (doomPortpath.name.toLowerCase().includes('gzdoom')) selectedDoomPortFlags = 'GZDoom';
+  if (doomPortpath.name.toLowerCase().includes('zandron')) selectedDoomPortFlags = 'Zandronum';
+  if (doomPortpath.name.toLowerCase().includes('chocol')) selectedDoomPortFlags = 'Chocolate';
+  if (doomPortpath.name.toLowerCase().includes('odamex')) selectedDoomPortFlags = 'odamex';
+}
+
+//derived ist für dmflags tabs auswahl für gzdoom oder zandronum
+let dmflagsbyport = $derived(dmflags.filter(e=> (e.port == selectedDoomPortFlags && (e.deathmatch == deathmatch || e.deathmatch == undefined)  /*|| (selectedDoomPortFlags != 'Chocolate' && e.port == undefined)*/ ) ))
+let addedflags = $state({});
+// $inspect(dmflagsbyport).with(console.trace);
+
+//ultra wichtig ist filter mit e.default != e.selected, denn allow jump ist standard an. aber die flag wird nicht addiert.
+//NUR wenn allow jump != standard ist... also OFF... dann wird flag addiert!
+function calcAddedFlags() {
+  //CVAR ist die consolen variable dmflags oder dmflags2... wird mit +dmflags[x] xxxx benutzt
+  addedflags['dmflags'] =  dmflagsbyport.filter(e=>e.cvar == 'dmflags' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
+  addedflags['dmflags2'] =  dmflagsbyport.filter(e=>e.cvar == 'dmflags2' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
+  addedflags['dmflags3'] =  dmflagsbyport.filter(e=>e.cvar == 'dmflags3' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
+  addedflags['zadmflags'] =  dmflagsbyport.filter(e=>e.cvar == 'zadmflags' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
+  addedflags['commandline'] = dmflagsbyport.filter(e=>e.cvar == 'commandline' && e.default != e.selected).reduce( (accum, current) => accum + ' ' + current.value, '' );
+
+  neuMods.save('dmflags', dmflags); // save also dmflags in storage, so its read after restart of app
+}
+// $inspect(addedflags).with(console.trace);
+
+
+//Map name formatted  MAPXX to XX for -warp XX command
+//or ExMy formatted to x y for -warp x y 
+let mapformatted = $derived.by( ()=>
+{
+  if (map.includes('MAP')) return map.slice(3,5)
+  if (map.includes('E')) {
+      let m = map.replaceAll('E', ' '); 
+      m = m.replaceAll('M', ' ');      
+      return m;
+  }
 })
-// $inspect(addonwads);
+
 
 
 function selectGameWAD(folderindex) {
   //Do nothing if selectedGameswad is clicked again the same
   if (selectedGameWAD !=folderindex)
     {
+      // console.log('in selectGamewad ', gamewads[folderindex]);
+      
       //reset folderindexaddons and scrollcursor that scrolling is not buggy with scrollbar
       folderindexAddon = 0;
       scrollcursorAddonWAD = 0;
+      selectedaddonwads = [];
+      showorderwads = 0;
       scrollcursorLevels = 0;
       mapindex = 0;
       addonwads.map(e=>e.selected=0)  //reset all selected addonWads when changing GameWad
       map = '';   //reset map warp text if another Gamewad is selected.
       gamewads[folderindex] ? selectedGameWAD=folderindex : 0
+
+      neuMods.save('selectedGameWAD', selectedGameWAD);
+      neuMods.save('wadcollection', wadcollection);
     }
   }
 
@@ -262,116 +518,141 @@ function selectGameWAD(folderindex) {
       else
         addonwads[folderindex].selected = 1;
     }
+    updateSelectedaddonwads();
+    neuMods.save('wadcollection', wadcollection);
   }
 
+
   function getButtonTextAddon(folderindex) {
-	let text = "";
-	if (addonwads[folderindex])
-	{
-		text = `${addonwads[folderindex].selected ? '→': ''}${addonwads[folderindex].entry}`
-	}
-	return text.toUpperCase();
+    let text = "";
+    if (addonwads[folderindex])
+    {
+      text = `${addonwads[folderindex].selected ? '→': ''}${addonwads[folderindex].entry}`
+    }
+    return text.toUpperCase();
   }
 
   function getlastselectedAddonWAD() {
-	//level select popup should show the last wad file maps.
-	let selectedAddons = addonwads.filter(e => e.selected && e.entry.toLowerCase().includes('.wad') && e.maps.length > 0)
-	// console.log(selectedAddons[selectedAddons.length-1]);
-    // selectedAddons[] is empty when no addonWAD is selected at all, so lastselectedAddonWAD is UNDEFINED!
-	lastselectedAddonWAD = 	selectedAddons[selectedAddons.length-1]
-    // console.log(lastselectedAddonWAD);
+	  //level select popup should show the last wad file maps.
+    updateSelectedaddonwads();
+
+    let i = selectedaddonwads?.findLastIndex(e=> e.maps.length > 0)
+    // console.log(i);  
+    // console.log(selectedaddonwads);
+
+    if (i != -1)
+      lastselectedAddonWAD = selectedaddonwads[i];
+    
+    console.log('last found wad in orderlist with maps: ', lastselectedAddonWAD?.entry);
   }
 
-  let players = $state(1)
-  let deathmatch = $state(0)
+let serverlistPort = $state('zandronum')
 
-  let pupblicIP = $state('0.0.0.0')
-  let joinIP = $state('192.168.0.1')
-  let joingame = $state(0);
-  let doomNetPort = $state('10666');
+async function refreshServerList() {
+  if (serverlistPort == 'zandronum')
+    serverlist = await getZandronumServerList();
+  if (serverlistPort == 'chocolate')
+    serverlist = await getChocolateServerList();
+  if (serverlistPort == 'odamex')
+    serverlist = await getOdamexServerList();
+}
 
-  let map = $state('');
-  //Map name formatted  MAPXX to XX for -warp XX command
-  //or ExMy formatted to x y for -warp x y 
-  let mapformatted = $derived.by( ()=>
-  {
-    if (map.includes('MAP')) return map.slice(3,5)
-    if (map.includes('E')) {
-        let m = map.replaceAll('E', ' '); 
-        m = m.replaceAll('M', ' ');      
-        return m;
+function resetServertList() {
+  serverlist = []
+}
+
+
+  function setjoinIP(newip, newport, iwad, newjoinPWADS) {
+    //delete all missing wads in wadcollection added by previous server join
+    
+    for (let e = 0; e < wadcollection.length; e++) {
+      //also reset any previous selected wads
+      if (wadcollection[e].selected)
+        wadcollection[e].selected = false; //reset all selected wads from previous join
     }
-  })
+    //reset all ordered addonwads
+    selectedaddonwads = [];
 
-  let mapindex = $state(0);
 
-  let skill = $state(3);
-  let skillactive = $state(0);
-
-  let showlevelselect = $state(0);
-  let lastselectedAddonWAD = $state(0);
-
-  let showwadfolders = $state(0);
-
-  let doomPortpath = $state({name: 'Choose Doom Port ...'})
-  let scrollcursorGameWAD = $state(0);
-  let scrollcursorAddonWAD = $state(0);
-  let scrollcursorLevels = $state(0);
-
-  let dmflags = $state([]);
-  dmflags = [
-        //dmflags
-        {cvar: 'dmflags', value: 16384, name: 'Items respawn', default: false, selected: false  },
-        {cvar: 'dmflags', value: 65536, name: 'Allow jump', default: true, selected: true  },
-        {cvar: 'dmflags', value: 4, name: 'Weapons Stay', default: false, selected: false  },
-        {cvar: 'dmflags', value: 33554432, name: '(coop) Keep keys ', default: true, selected: true  },
-        {cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons ', default: true, selected: true },
-        //dmflags2
-        {port:'GZDoom', cvar: 'dmflags2', value: 134217728, name: 'Big powerups respawn', default: false, selected: false  },
-        {port:'Zandronum', cvar: 'dmflags', value: 524288, name: 'Big powerups respawn', default: false, selected: false  },
-        //dmflags3 - zandronum has zadmflags
-        {port:'GZDoom', cvar: 'dmflags3', value: 2, name: '(coop) Share keys ', default: false, selected: false  },
-        {port:'Zandronum', cvar: 'zadmflags', value: 64, name: '(coop) Share keys ', default: false, selected: false  },
-    ]
-
-  let selectedDoomPortFlags = $state('GZDoom');
-
-  //change for dmflags doomport tabs in flags menu. try to preselect depends on filename of port.
-  function setSelectedDoomPortFlags() {
-    if (doomPortpath.name.toLowerCase().includes('gzdoom')) selectedDoomPortFlags = 'GZDoom';
-    if (doomPortpath.name.toLowerCase().includes('zandron')) selectedDoomPortFlags = 'Zandronum';
-  }
-
-  //derived ist für dmflags tabs auswahl für gzdoom oder zandronum
-  let dmflagsbyport = $derived(dmflags.filter(e=> (e.port == selectedDoomPortFlags || e.port == undefined) ))
-
-  let addedflags = $state({});
-  let showdeathmatchflags = $state(0);
-
-    //ultra wichtig ist filter mit e.default != e.selected, denn allow jump ist standard an. aber die flag wird nicht addiert.
-    //NUR wenn allow jump != standard ist... also OFF... dann wird flag addiert!
-    function calcAddedFlags() {
-        //CVAR ist die consolen variable dmflags oder dmflags2... wird mit +dmflags[x] xxxx benutzt
-        addedflags['dmflags'] =  dmflagsbyport.filter(e=>e.cvar == 'dmflags' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
-        addedflags['dmflags2'] =  dmflagsbyport.filter(e=>e.cvar == 'dmflags2' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
-        addedflags['dmflags3'] =  dmflagsbyport.filter(e=>e.cvar == 'dmflags3' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
-        addedflags['zadmflags'] =  dmflagsbyport.filter(e=>e.cvar == 'zadmflags' && e.default != e.selected).reduce( (accum, current) => accum + current.value,0 )
-    }
-
-  // $inspect(addedflags).with(console.trace);
-
-  let showserverlist = $state(0);
-  let serverlist = $state([]);
-
-  function setjoinIP(newip, newport) {
     joinIP = newip;
     doomNetPort = newport;
+    // console.log(iwad);
+    //select the iwad in gamewads list if found
+    let i = gamewads.findIndex(e=>e.entry.toLowerCase() == iwad.toLowerCase());
+    if (i != -1)
+    {
+      selectedGameWAD = i;
+      selectGameWAD( i );
+    }     
+    else {
+      console.log('missing iwad ', iwad);
+      wadcollection.push( {entry: iwad.toLowerCase() , path: iwad, iwad: true, maps:[], missing: true } );
+      //sort the missing iwad in gamewads
+      wadcollection.sort((a, b) => a.entry.toLowerCase() > b.entry.toLowerCase() ? 1 : a.entry.toLowerCase() == b.entry.toLowerCase() ? a.dupl=1 : -1);
+      //find the new position of the missing iwad
+      let r = gamewads.findIndex(e=>e.path == iwad);  
+      //and set the index in gamewads to that
+      if (r != -1) selectedGameWAD = r;      
+    }
+    folderindex = selectedGameWAD > 5 ? (selectedGameWAD -5) : 0;  // -5 so the selected gamewad si always at the bottom of the list visible
+    scrollcursorGameWAD =  Math.floor( (folderindex) /(gamewads.length/4) )
+
+    // error when pwads are 0 then newjoinPWADS[newjoinPWADS.length-1] suxxx
+    if (newjoinPWADS && newjoinPWADS.length > 0) {
+      for (let a = 0; a < newjoinPWADS.length; a++) {
+        let ia = addonwads.findIndex(e=>e.entry.toLowerCase() == newjoinPWADS[a].name.toLowerCase())
+        if (ia != -1)
+        {
+          //if addon exists then select it
+          addonwads[ia].selected = 1;
+          //sehr wichtig hier upzudaten, nach jeder gefundenen wad, damit die reihenfolge der PWADs vom Server beibehalten wird!
+          updateSelectedaddonwads();
+          console.log('found wad in addonwads. updateing selectedaddonwads ');
+        }
+        else
+        {
+          selectedaddonwads.push( {entry: newjoinPWADS[a].name.toLowerCase(), path: newjoinPWADS[a].name, iwad: false, selected: true, maps:[], missing: true } );
+          console.log('missing pwad ', newjoinPWADS[a].name, ' hash ', newjoinPWADS[a].hash);
+        }
+      }
+    } else {
+      //this is when no pwads exist, so scroll on top of the addonslist
+      folderindexAddon = 0;
+      scrollcursorAddonWAD = 0;
+    }
+      
+    folderindexOrderwads = 0;
+    scrollcursorOrderwads = 0;
+    // updateSelectedaddonwads();
+    showorderwads = 1; //show order wads list
+    joingame = 1; //set join game flag
   }
 
-  let showpresets = $state(0);
-  let presets = $state([
-    // {name: 'last state'}
-  ]);
+
+  async function clearServerListPWADS() {
+    //delete all missing wads in wadcollection added by previous server join
+    for (let e = 0; e < wadcollection.length; e++) {
+      if (wadcollection[e].missing)
+      {
+        wadcollection.splice(e,1);
+        e--;
+      }
+    }
+
+    selectedGameWAD = 0;
+    selectGameWAD(0);
+    folderindex = 0;
+    scrollcursorGameWAD = 0;
+    scrollcursorAddonWAD = 0;
+    folderindexAddon = 0;
+    mapindex = 0;
+    map = '';
+
+    joinIP = await neuMods.getLocalIP();
+    doomNetPort = '10666';
+  }
+
+
 
 
   function deletePreset(i) {
@@ -385,76 +666,148 @@ function selectGameWAD(folderindex) {
   }
 
   function addPreset(i, name) {
-      presets[i] = {name, doomPortpath, wadfolders, selectedGameWAD, addonwads, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort}
-      presets[i].wadfolder = JSON.parse(JSON.stringify(wadfolders));
-      presets[i].addonwads = JSON.parse(JSON.stringify(addonwads));
+      presets[i] = {name, doomPortpath, selectedGameWAD, players, deathmatch, map, skill, joinIP, joingame, doomNetPort}
+      presets[i].wadfolders = JSON.parse(JSON.stringify(wadfolders));
+      presets[i].wadcollection = JSON.parse(JSON.stringify(wadcollection));
       presets[i].dmflags= JSON.parse(JSON.stringify(dmflags));
       neuMods.save('presets', presets);
   }
 
   function savePreset(i) {
-      presets[i] = {name: presets[i].name, doomPortpath, wadfolders, selectedGameWAD, addonwads, players, deathmatch, dmflags, map, skill, joinIP, joingame, doomNetPort}
-      presets[i].wadfolder = JSON.parse(JSON.stringify(wadfolders));
-      presets[i].addonwads = JSON.parse(JSON.stringify(addonwads));
+      let name = presets[i].name;
+      presets[i] = {name, doomPortpath, selectedGameWAD, players, deathmatch, map, skill, joinIP, joingame, doomNetPort}
+      presets[i].wadfolders = JSON.parse(JSON.stringify(wadfolders));
+      presets[i].wadcollection = JSON.parse(JSON.stringify(wadcollection));
       presets[i].dmflags= JSON.parse(JSON.stringify(dmflags));
       neuMods.save('presets', presets);
   }
 
+async function loadPreset(i) {
+  // console.log('loading', presets);
+  
+  if (presets && presets.length > 0)
+  {
+    doomPortpath= presets[i].doomPortpath;
+    wadfolders= JSON.parse(JSON.stringify(presets[i].wadfolders));
+    //calculate the wadcollection new and set game
+    await readWadFolders(presets[i].wadcollection);
+    selectedGameWAD= presets[i].selectedGameWAD;
+    players= presets[i].players;
+    deathmatch= presets[i].deathmatch;
 
-    $inspect('addedflags: ', addedflags);
+    tempdmflags= JSON.parse(JSON.stringify(presets[i].dmflags));
+    if (tempdmflags) 
+    {
+      testloadedDMFlags(tempdmflags);
+    }
 
-    $inspect('presets: ', presets);
-    $inspect('wadcollection:', wadcollection);
+    map= presets[i].map || '';
+    skill= presets[i].skill;
+    joinIP= presets[i].joinIP;
+    joingame= presets[i].joingame;
+    doomNetPort= presets[i].doomNetPort;      
+  
+    selectGameWAD(selectedGameWAD);
+    folderindex = selectedGameWAD > 5 ? (selectedGameWAD -5) : 0;  // -5 so the selected gamewad si always at the bottom of the list visible
+    scrollcursorGameWAD =  Math.floor( (folderindex) /(gamewads.length/4) )
 
-    async function loadPreset(i) {
-      console.log('loading', presets);
-      
-      if (presets && presets.length > 0)
+    //calculate the var selectedDoomportflags new
+    setSelectedDoomPortFlags();
+    //so the button flags is marked correctly after loading dmflags, addedflags has to be filled
+    calcAddedFlags();
+    
+    //reset all scroll lists
+    folderindexAddon=0;
+    scrollcursorAddonWAD = 0;
+    scrollcursorLevels = 0;
+    mapindex=0;
+    showorderwads = 0;
+    selectedaddonwads = []; 
+    updateSelectedaddonwads();
+
+    //save all loaded preset variables as defaults
+    neuMods.save('selectedgameWAD', selectedGameWAD);
+    neuMods.save('wadcollection', wadcollection);
+    neuMods.save('dmflags', dmflags);
+    neuMods.save('doomPortpath', doomPortpath);
+    neuMods.save('wadfolders', wadfolders);
+    neuMods.save('deathmatch', deathmatch);
+    neuMods.save('skill', skill);
+    neuMods.save('joinIP', joinIP);
+    neuMods.save('joingame', joingame);
+    neuMods.save('doomNetPort', doomNetPort);
+    neuMods.save('players', players);
+    neuMods.save('map', map);
+  }
+}
+
+
+  function handleDropAddonwads(e) {
+    e.preventDefault();
+    const index = e.dataTransfer.getData("text/plain");
+    let entry = addonwads[index].entry;
+    let path = addonwads[index].path;
+    addonwads[index].iwadfake = 1;
+    // console.log('in gamewads after drop ', addonwads[index]);
+    
+    // sortWADS(gamewads);
+    let newindex = gamewads.findIndex(e=>e.entry == entry && e.path == path);
+    // console.log('in gamewads after drop ', newindex);
+    selectGameWAD(newindex);
+    folderindex = selectedGameWAD > 5 ? (selectedGameWAD -5) : 0;  // -5 so the selected gamewad si always at the bottom of the list visible
+    //set scrollbar cursor position from gamewads list
+    scrollcursorGameWAD =  Math.floor( (folderindex+1) /(gamewads.length/4) )
+    
+    soundRestart(1);
+  }
+
+  function handleDropgamewads(e) {
+    e.preventDefault();
+    
+    const index = e.dataTransfer.getData("text/plain");
+    // console.log('in drops bei addons ', index);
+    if (gamewads[index] && !gamewads[index].iwad)
       {
-
-          doomPortpath= presets[i].doomPortpath;
-          wadfolders= JSON.parse(JSON.stringify(presets[i].wadfolders));
-          //calculate the wadcollection new
-          await readWadFolders();
-          selectedGameWAD= presets[i].selectedGameWAD;
-          players= presets[i].players;
-          deathmatch= presets[i].deathmatch;
-          dmflags= JSON.parse(JSON.stringify(presets[i].dmflags));
-          map= presets[i].map;
-          skill= presets[i].skill;
-          joinIP= presets[i].joinIP;
-          joingame= presets[i].joingame;
-          doomNetPort= presets[i].doomNetPort;      
-        
-          if (presets[i].addonwads)
-            {
-              for (let a = 0; a < presets[i].addonwads.length; a++) {
-                addonwads[a].selected = presets[i].addonwads[a].selected;
-              }
-            }
-
-          //calculate the var selectedDoomportflags new
-          setSelectedDoomPortFlags();
-          //so the button flags is marked correctly after loading dmflags, addedflags has to be filled
-          calcAddedFlags();
-          
-          //reset all scroll lists
-          folderindex=0;
-          folderindexAddon=0;
-          scrollcursorAddonWAD = 0;
-          scrollcursorGameWAD=0;
-          scrollcursorLevels = 0;
-          mapindex=0;
+        gamewads[index].iwadfake = 0;
+        if (selectedGameWAD>0) selectedGameWAD--; //fake gamewad will be removed from list so set selectedGameWAD one back
+        neuMods.save('selectedgameWAD', selectedGameWAD);
+        neuMods.save('wadcollection', wadcollection);
       }
+    soundRestart(1);
+  }
+
+  function handleDragGamewad(e, i) {
+    draggamewad = 1;
+    e.dataTransfer.setData("text/plain", i);
+    soundRestart(2);
+  }
+
+  function handleDragAddonwad(e, i) {
+    dragaddonwad = 1;
+    e.dataTransfer.setData("text/plain", i);
+    soundRestart(2);
   }
 
   function hideAllPopups() {
-    showdeathmatchflags = 0;
-    showlevelselect = 0;
-    showpresets = 0;
-    showserverlist = 0;
     showwadfolders = 0;
+    showlevelselect = 0;
+    showserverlist = 0;
+    showdeathmatchflags = 0;
+    showpresets = 0;
   }
+
+
+// $inspect('draggamewad: ', draggamewad);
+// $inspect('dragaddonwad: ', dragaddonwad);
+// $inspect('pwads', joinServerListPWADS)
+
+// $inspect('addedflags: ', addedflags);
+
+// $inspect('presets: ', presets);
+
+// $inspect('wadcollection:', wadcollection, gamewads, addonwads);
+// $inspect('addonwads: ',addonwads);
+// $inspect('gamewads: ',gamewads);
 
 </script>
 
@@ -492,49 +845,88 @@ function selectGameWAD(folderindex) {
 			<button class="cellupdown" style="grid-column: 19; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownGameWAD)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>
 
       {#each Array(6) as rowWAD, i}
-        <button class="h4 { selectedGameWAD == folderindex+i ? 'hsel' : ''}" style="grid-column: {3} / span 16; grid-row: {4+i}" onclick="{()=>{selectGameWAD(folderindex+i);  soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownGameWAD() : scrollupGameWAD()}"> {getButtonText(folderindex+i)}</button>
+        <button class="h4 {gamewads[folderindex+i]?.dupl ? 'hdis' : ''} { selectedGameWAD == folderindex+i ? 'hsel' : ''}" style="grid-column: {3} / span 16; grid-row: {4+i}; {gamewads[folderindex+i]?.missing ? 'color: red;' : '' }" 
+        title="{gamewads[folderindex+i]?.path}"  
+        draggable="{!gamewads[folderindex+i]?.iwad}" 
+          ondragstart="{(e)=>handleDragAddonwad(e, folderindex+i)}" ondragend="{()=>dragaddonwad = 0}"
+          ondrop="{(e)=>handleDropAddonwads(e)}" ondragover="{(e)=>{if (!showorderwads) dragaddonwad == 0 ? e.preventDefault() : 0}}" 
+          onclick="{()=>{selectGameWAD(folderindex+i);  soundRestart(2);}}" 
+          onwheel="{e=>e.deltaY > 0 ? scrolldownGameWAD() : scrollupGameWAD()}"
+          > 
+            {getButtonText(folderindex+i)}
+        </button>
       {/each}
 			<!-- ENDE GAME WAD Auswahl -->
 
-			<div class="border-mid" style="grid-column: {3+19}; grid-row: 3 / {13};"></div>
+      <div class="border-mid" style="grid-column: {3+19}; grid-row: 3 / {13};"></div>
 
-			<div class="h2" style="grid-column: 24 / 34; grid-row: {3}">Addon WAD</div>
-			
-			<button class="cellupdown" style="grid-column: 47; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupAddons)}}" onmouseleave="{()=>clearAllTimers()}">↑</button>     
-				<div class="cellgray" style="grid-column:  47; grid-row: {4+1} / {4+5}">
-            <span onmousedown="{()=>{clickInterval(scrollupAddons)}}">░</span>
-            <span onmousedown="{()=>{scrollcursorAddonWAD > 1 ? clickInterval(scrollupAddons) : clickInterval(scrolldownAddons) }}">░</span>
-            <span onmousedown="{()=>{scrollcursorAddonWAD > 2 ? clickInterval(scrollupAddons) : clickInterval(scrolldownAddons) }}">░</span>
-            <span onmousedown="{()=>{clickInterval(scrolldownAddons) }}">░</span>        
-        </div> 
-        <div class="cellgray" style="grid-column:  47; grid-row: {4+1+ scrollcursorAddonWAD}">▓</div>
-                <div class="cellblack" style="grid-column:  46; grid-row: {4} / {4+1+5}"></div>
-			<button class="cellupdown" style="grid-column: 47; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownAddons)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>    
+			<button class="h4" style="background-color:{showorderwads ? 'green' : 0}; grid-column: {24+17} / span {1}; grid-row: {3}" title="change order of wads" 
+              onmousedown="{()=>  {soundRestart(0);}}" 
+              onclick="{async ()=>{scrollcursorAddonWAD = 0; folderindexAddon = 0; folderindexOrderwads = 0; scrollcursorOrderwads = 0; updateSelectedaddonwads(); showorderwads = !showorderwads}}">
+        ↕</button>
 
-      {#each Array(6) as rowWAD, i}
-        <button class="h4 {addonwads[folderindexAddon+i]?.selected ? 'hsel' : ''}"   style="grid-column: {24} / span 22; grid-row: {4+i}" onclick="{()=>{selectAddonWAD(folderindexAddon+i);  soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownAddons() : scrollupAddons()}">{getButtonTextAddon(folderindexAddon+i)}</button>
-      {/each}
+      <!-- START ADDON WAD Auswahl -->
+      {#if !showorderwads}
+        <div class="h2" style="white-space: nowrap; text-align:left; padding-left: 3px; grid-column: 24 / {34 +5}; grid-row: {3}">Addon WAD {addonwads.filter(e=>e.selected).length}/{addonwads.length}</div>
+
+        <button class="cellupdown" style="grid-column: 47; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupAddons)}}" onmouseleave="{()=>clearAllTimers()}">↑</button>     
+          <div class="cellgray" style="grid-column:  47; grid-row: {4+1} / {4+5}">
+              <span onmousedown="{()=>{clickInterval(scrollupAddons)}}">░</span>
+              <span onmousedown="{()=>{scrollcursorAddonWAD > 1 ? clickInterval(scrollupAddons) : clickInterval(scrolldownAddons) }}">░</span>
+              <span onmousedown="{()=>{scrollcursorAddonWAD > 2 ? clickInterval(scrollupAddons) : clickInterval(scrolldownAddons) }}">░</span>
+              <span onmousedown="{()=>{clickInterval(scrolldownAddons) }}">░</span>        
+          </div> 
+          <div class="cellgray" style="grid-column:  47; grid-row: {4+1+ scrollcursorAddonWAD}">▓</div>
+                  <div class="cellblack" style="grid-column:  46; grid-row: {4} / {4+1+5}"></div>
+        <button class="cellupdown" style="grid-column: 47; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownAddons)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>    
+
+        {#each Array(6) as rowWAD, i}
+          <div style="background-color: black; grid-column: {24} / span 22; grid-row: {4+i};">
+          </div>
+          <button class="h4 {addonwads[folderindexAddon+i]?.selected ? 'hsel' : ''}"   style="background: none; grid-column: {24} / span 22; grid-row: {4+i}; " 
+            draggable="{addonwads[folderindexAddon+i] != undefined}" 
+            ondragstart="{(e)=>{ handleDragGamewad(e, folderindexAddon+i) } }" 
+            ondragend="{()=>{  draggamewad = 0 } }"
+            ondrop="{(e)=>{ handleDropgamewads(e) } }" 
+            ondragover="{(e)=>{ draggamewad == 0 ? e.preventDefault() : 0 } }"
+            onclick="{()=>{ if (addonwads[folderindexAddon+i] != undefined) selectAddonWAD(folderindexAddon+i);  soundRestart(2);}}" 
+            onwheel="{e=>e.deltaY > 0 ? scrolldownAddons() : scrollupAddons()}"
+            >
+              {getButtonTextAddon(folderindexAddon+i)}
+          </button>
+        {/each}
+      {/if}
+      <!-- ENDE ADDON WAD Auswahl -->
+
+      <!-- START ORDER SELECTED ADDON WAD LIST -->
+      {#if showorderwads}        
+            <PopupOrderwads bind:selectedaddonwads bind:folderindexOrderwads bind:scrollcursorOrderwads {clickInterval} {clearAllTimers} {updateSelectedaddonwads} />
+      {/if}
+      <!-- ENDE ORDER SELECTED ADDON WAD LIST -->
+
 
       {#if showwadfolders}
-      <PopupWadFolders bind:showwadfolders {wadfolders} {onWadFoldersAdd} {readWadFolders} {spliceWadFolders}/>
+        <PopupWadFolders bind:showwadfolders {wadfolders} {onWadFoldersAdd} {readWadFolders} {spliceWadFolders}/>
       {/if}
 
 			<div class="border-horizontal" style="grid-column: 2 / 50; grid-row: {10}"></div>
 
 			<!-- NUMBER OF PLAYERS with Radiobuttons -->
 			<div class="h2" style="grid-column: 3 / 16; grid-row: {10}"># of Players</div>
-				<button class="h {joingame ? "hdis" : 0}" style="grid-column: 3 / span 6; grid-row: {11}" onclick="{()=>{players=1; soundRestart(2);}}"> (<span class="y">{players==1 ? '•' : ' '}</span>) SP </button>
-				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+8} / span 5; grid-row: {11}" onclick="{()=>{players=2; soundRestart(2);}}">(<span class="y">{players==2 ? '•' : ' '}</span>) 2</button>
-				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3} / span 5; grid-row: {12}" onclick="{()=>{players=3; soundRestart(2);}}">(<span class="y">{players==3 ? '•' : ' '}</span>) 3</button>
-				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+8} / span 5; grid-row: {12}" onclick="{()=>{players=4; soundRestart(2);}}">(<span class="y">{players==4 ? '•' : ' '}</span>) 4</button>
-				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+8+6} / span 5; grid-row: {11}" onclick="{()=>{players=5; soundRestart(2);}}">(<span class="y">{players==5 ? '•' : ' '}</span>)5</button>
-        <button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+8+6} / span 5; grid-row: {12}" onclick="{()=>{players=6; soundRestart(2);}}">(<span class="y">{players==6 ? '•' : ' '}</span>)6</button>
+				<button class="h {joingame ? "hdis" : 0}" style="grid-column: 3 / span 6; grid-row: {11}" onclick="{()=>{players=1; neuMods.save('players', players); soundRestart(2);}}"> (<span class="y">{players==1 ? '•' : ' '}</span>) SP </button>
+				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+7} / span 5; grid-row: {11}" onclick="{()=>{players=2; neuMods.save('players', players); soundRestart(2);}}">(<span class="y">{players==2 ? '•' : ' '}</span>) 2</button>
+				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3} / span 5; grid-row: {12}" onclick="{()=>{players=3; neuMods.save('players', players); soundRestart(2);}}">(<span class="y">{players==3 ? '•' : ' '}</span>) 3</button>
+				<button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+7} / span 5; grid-row: {12}" onclick="{()=>{players=4; neuMods.save('players', players); soundRestart(2);}}">(<span class="y">{players==4 ? '•' : ' '}</span>) 4</button>
+				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3+7+6} / span 5; grid-row: {11}" onclick="{()=>{players=5; neuMods.save('players', players); soundRestart(2);}}">(<span class="y">{players==5 ? '•' : ' '}</span>)5</button>
+        
+        <button class="h {joingame ? "hdis" : 0}" style="grid-column: {3+7+5} / span 5; grid-row: {12}" onclick="{()=>{players=6; neuMods.save('players', players); soundRestart(2);}}">(<span class="y">{players>=6 ? '•' : ' '}</span>)</button>
+        <input style="outline: 0px ; text-align:left; grid-column: {3+7+6+3} / span 3; grid-row: {12}" maxlength="2" min="1"  max="64" type="number" bind:value={players} />
 
 			<!-- GAMETYPEs with Radiobuttons -->
 			<div class="h2" style="grid-column: 24 / 34; grid-row: {10}">Game Type</div>
-				<button class="h {joingame ? "hdis" : 0}" style="grid-column: 24 / span 15; grid-row: {11}" onclick="{()=>{deathmatch=0; calcAddedFlags(); soundRestart(2);}}">(<span class="y">{deathmatch==0 ? '•' : ' '}</span>) Cooperative</button>
-          <button class="h {joingame ? "hdis" : 0}" style="grid-column: {24+15} / span 10; grid-row: {11}" onclick="{()=>{hideAllPopups(); showdeathmatchflags = 1; soundRestart(0);}}">(<span class="y">{addedflags['dmflags'] || addedflags['dmflags2'] || addedflags['dmflags3'] || addedflags['zadmflags'] ? '•' : ' '}</span>) Flags</button>
-        <button class="h {joingame ? "hdis" : 0}" style="grid-column: 24 / span 14; grid-row: {12}" onclick="{()=>{deathmatch=1; calcAddedFlags(); soundRestart(2);}}">(<span class="y">{deathmatch==1 ? '•' : ' '}</span>) DeathMatch</button>
+				<button class="h {joingame ? "hdis" : 0}" style="grid-column: 24 / span 15; grid-row: {11}" onclick="{()=>{deathmatch=0; neuMods.save('deathmatch', deathmatch); resetFlagDefaults(); calcAddedFlags(); soundRestart(2);}}">(<span class="y">{deathmatch==0 ? '•' : ' '}</span>) Cooperative</button>
+          <button class="h {joingame ? "hdis" : 0}" style="grid-column: {24+15} / span 10; grid-row: {11}" onclick="{()=>{hideAllPopups(); showdeathmatchflags = 1; soundRestart(0);}}">(<span class="y">{addedflags['dmflags'] || addedflags['dmflags2'] || addedflags['dmflags3'] || addedflags['zadmflags'] || addedflags['commandline'] ? '•' : ' ' }</span>) Flags</button>
+        <button class="h {joingame ? "hdis" : 0}" style="grid-column: 24 / span 14; grid-row: {12}" onclick="{()=>{deathmatch=1; neuMods.save('deathmatch', deathmatch); changeDMFlagDefaults(); calcAddedFlags(); soundRestart(2);}}">(<span class="y">{deathmatch==1 ? '•' : ' '}</span>) DeathMatch</button>
 
         {#if showdeathmatchflags}
           <PopupFlags bind:showdeathmatchflags bind:dmflags bind:selectedDoomPortFlags {dmflagsbyport} bind:addedflags {calcAddedFlags}/>
@@ -544,7 +936,7 @@ function selectGameWAD(folderindex) {
 
 			<!-- IPADDRESS PUBLIC and JOIN IP with Radiobutton -->
 			<div class="h2" style="grid-column: 3 / span 13; grid-row: {13}">Connect Type</div>
-				<button class="h " style="text-align:left; grid-column: {3} / span 10; grid-row: {14}" onclick="{() =>{ joingame = 0; navigator.clipboard.writeText(pupblicIP); soundRestart(2);} }" >(<span class="y">{joingame == false ? '•' : ' '}</span>) Server</button>
+				<button class="h " style="text-align:left; grid-column: {3} / span 10; grid-row: {14}" onclick="{() =>{if (joingame) { joingame = 0; /*clearServerListPWADS();*/ } navigator.clipboard.writeText(pupblicIP); soundRestart(2);} }" >(<span class="y">{joingame == false ? '•' : ' '}</span>) Server</button>
 							
 				<button class="h" style="text-align:left; grid-column: {3} / span 10; grid-row: {15}"  onclick="{()=> {joingame = 1; soundRestart(2);}}">(<span class="y">{joingame ? '•' : ' '}</span>) Join</button>
 				<input style="outline: 0px ; text-align:left; grid-column: {18} / span 15; grid-row: {15}"  maxlength="15" bind:value={joinIP} />
@@ -556,7 +948,7 @@ function selectGameWAD(folderindex) {
 				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {18} / span 29; grid-row: {14}" onclick="{() =>{ navigator.clipboard.writeText(pupblicIP); soundRestart(1);} }" > Public IP: {pupblicIP}</button>
         
         {#if showserverlist}
-        <PopupServerList bind:showserverlist {serverlist} {setjoinIP}/>
+        <PopupServerList bind:showserverlist {serverlist} bind:serverlistPort {refreshServerList} {resetServertList} {setjoinIP} {serverindex} {scrollcursorServers} {mouseclickTimer} {clickInterval}/>
         {/if}
 
 			<div class="border-horizontal" style="grid-column: 2 / 50; grid-row: {17}"></div>
@@ -565,18 +957,18 @@ function selectGameWAD(folderindex) {
 				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3} / span 16; grid-row: {18}"  onclick="{()=> {getlastselectedAddonWAD(); hideAllPopups();  showlevelselect=1; soundRestart(0);}}"> Select map...</button>
 
 				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3} / span 5; grid-row: {19}"  onclick="{0}"> Map:</button>
-				<input style="outline: 0px ; text-align:left; grid-column: {3+5} / span 8; grid-row: {19}"  maxlength="8" bind:value={map} />
+				<input style="outline: 0px ; text-align:left; grid-column: {3+5} / span 8; grid-row: {19}"  maxlength="8" bind:value={map} onchange="{()=>neuMods.save('map', map)}" />
 
 			<!-- SKILL OPTION -->
 				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3+27} / span 10; grid-row: {18}"  onclick="{()=> {skillactive = !skillactive; soundRestart(2);}}">(<span class="y">{skillactive ? '•' : ' '}</span>) Skill</button>
-				<input style="outline: 0px ; text-align:left; grid-column: {3+27+10} / span 3; grid-row: {18}"  maxlength="1" min="1" max="5" type="number" bind:value={skill} />
+				<input style="outline: 0px ; text-align:left; grid-column: {3+27+10} / span 3; grid-row: {18}" maxlength="1" min="1" max="5" type="number" bind:value={skill} />
 				<div class="h5 {joingame ? "hdis" : 0}" style="grid-column: {3+27+10+4} / span 5; grid-row: {18}">[1-5]</div>
 
-			<button class="go" style="grid-column: 43 / span 5; grid-row: {rows}" onclick="{()=>{ soundRestart(1); neuMods.startGame(selectedDoomPortFlags, doomPortpath.fullpath, gamewads[selectedGameWAD]?.path , addonwads, joingame, joinIP, doomNetPort, players, deathmatch, skillactive, skill, mapformatted, addedflags) } }">Go!</button>  
+			<button class="go" style="grid-column: 43 / span 5; grid-row: {rows}" onclick="{()=>{ soundRestart(1); neuMods.startGame(selectedDoomPortFlags, doomPortpath.fullpath, gamewads[selectedGameWAD]?.path , selectedaddonwads, joingame, joinIP, doomNetPort, players, deathmatch, skillactive, skill, mapformatted, addedflags); /*clearServerListPWADS()*/ } }">Go!</button>  
 
 			<!-- POPUP LEVEL SELECT -->
 			{#if showlevelselect}
-				<PopupMaps bind:showlevelselect {gamewads} {selectedGameWAD} {lastselectedAddonWAD} {scrollcursorLevels} {clickInterval} {scrollupMaps} {scrolldownMaps} {clearAllTimers} bind:map {mapindex}/>
+				<PopupMaps bind:showlevelselect {gamewads} {selectedGameWAD} {lastselectedAddonWAD} {scrollcursorLevels} {clickInterval} {clearAllTimers} bind:map {mapindex}/>
 			{/if}
 
       <!-- PRESET BUTTON and PRESET SELECTION POPUP -->
@@ -713,7 +1105,7 @@ function selectGameWAD(folderindex) {
 	color: var(--text-black);
 }
 
-.h2 {
+:global(.h2) {
 	user-select: none;
 	text-align: center;
 	background-color: var(--bg-window); 
@@ -745,17 +1137,18 @@ function selectGameWAD(folderindex) {
 	background-color: var(--bg-window);
   color: rgb(225, 225, 225);
 }
-.cellblack {
+:global(.cellblack) {
 	user-select: none;
 	text-align: center;
 	background-color: rgb(0, 0, 0); 
 }
-.h4 {
+:global(.h4) {
 	user-select: none;
 	text-align: left;
 	overflow: hidden;
 	background-color: black; 
 	color: var(--text);
+  white-space: nowrap;
 }
 
 .go {
@@ -796,7 +1189,8 @@ function selectGameWAD(folderindex) {
 .hdis {
 	color: gray;
 }
-.hsel {
+:global(.hsel) {
 	color: var(--text-important);
 }
+
 </style>

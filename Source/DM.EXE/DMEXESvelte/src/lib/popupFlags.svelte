@@ -12,6 +12,7 @@ let {
 
     // on new popup shwo calc fresh
     calcAddedFlags();
+    $inspect(addedflags);
 </script>
 
 
@@ -22,7 +23,8 @@ let {
 <div class="h1" style="z-index: 20; grid-column: 7 / 45; grid-row: {3}">Flags select (grey = default) </div>
 
 <button class="h" style=" text-align:left; z-index: 20; grid-column: 7 / span 11; grid-row: {4}"  onclick="{()=> {selectedDoomPortFlags = 'GZDoom'; calcAddedFlags(); soundRestart(2);}}" >(<span class="y">{selectedDoomPortFlags == 'GZDoom' ? '•' : ' '}</span>) GZDoom </button>
-<button class="h" style=" text-align:left; z-index: 20; grid-column: {7+12} / span 14; grid-row: {4}"  onclick="{()=> {selectedDoomPortFlags = 'Zandronum'; calcAddedFlags(); soundRestart(2);}}" >(<span class="y">{selectedDoomPortFlags == 'Zandronum' ? '•' : ' '}</span>) Zandronum</button>
+<button class="h" style=" text-align:left; z-index: 20; grid-column: {7+11} / span 13; grid-row: {4}"  onclick="{()=> {selectedDoomPortFlags = 'Zandronum'; calcAddedFlags(); soundRestart(2);}}" >(<span class="y">{selectedDoomPortFlags == 'Zandronum' ? '•' : ' '}</span>) Zandronum</button>
+<button class="h" style=" text-align:left; z-index: 20; grid-column: {7+12+13} / span 13; grid-row: {4}"  onclick="{()=> {selectedDoomPortFlags = 'Chocolate'; calcAddedFlags(); soundRestart(2);}}" >(<span class="y">{selectedDoomPortFlags == 'Chocolate' ? '•' : ' '}</span>) Chocolate</button>
 
 <div class="border-horizontal-popup" style="z-index: 20; grid-column: 6 / 46; grid-row: {5} / span 1"></div>
 

@@ -36,20 +36,20 @@ function onclickFolderbutton(i)
 
 
 {#each Array(8) as flag, i}
-    <!-- svelte-ignore a11y_mouse_events_have_key_events -->
-    <button class="h folderpath" style="background-color:{hoveredfolder==i && i <= wadfolders.length? '#5d5d5d' : ''}; text-align:left; z-index: 40; grid-column: 7 / 45; grid-row: {5+i}" 
-        use:scrollTexta={()=>i == wadfolders.length ? '+': wadfolders[i] || ''} onmouseenter="{()=>hoveredfolder=i}" onclick="{()=> onclickFolderbutton(i) }" > 
-            <!-- {i == wadfolders.length ? '+': wadfolders[i]}  -->
-    </button> 
-    {#if hoveredfolder == i && i < wadfolders.length}
-        <button class="h del" style="text-align:right; z-index: 40; grid-column: 44 / 45; grid-row: {5+i}" onclick="{()=>spliceWadFolders(i)}">X</button>
-    {/if}
-    
+        <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+        <button class="h folderpath" style="background-color:{hoveredfolder==i && i <= wadfolders.length? '#5d5d5d' : ''}; text-align:left; z-index: 40; grid-column: 7 / 45; grid-row: {5+i}" 
+            use:scrollTexta={()=>i == wadfolders.length ? '+': wadfolders[i] || ''} onmouseenter="{()=>hoveredfolder=i}" onclick="{()=> onclickFolderbutton(i) }" > 
+                <!-- {i == wadfolders.length ? '+': wadfolders[i]}  -->
+        </button> 
+        {#if hoveredfolder == i && i < wadfolders.length}
+            <button class="h del" style="text-align:right; z-index: 40; grid-column: 44 / 45; grid-row: {5+i}" onclick="{()=>spliceWadFolders(i)}">X</button>
+        {/if}
 {/each}
 
 
 <div class="border-horizontal-popup" style="z-index: 40; grid-column: 6 / 46; grid-row: {2+12} / span 1"></div>
 <button class="h" style="z-index: 40; text-align:left; grid-column: {6+33} / span 6; grid-row: {15}"  onclick="{()=> {showwadfolders = 0; soundRestart(1); readWadFolders(); }}">Accept</button>
+<div class="h" style="z-index: 40; color:grey; text-align:left; font-size:x-small; line-height:1.8em; grid-column: {6+1} / span {30}; grid-row: {15}" >Tip: Subfolders will automatically be searched.</div>
 
 
 <style>
