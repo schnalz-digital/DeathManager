@@ -32,6 +32,8 @@ let {
   }
 
   function scrolldownMaps() {
+    // console.log('scrolldownstart', lastselectedAddonWAD);
+    
     // lastselectedAddonWAD is Object of WAD with maps[] array. if its not 0 then an AddonWAD is selected...
     if (lastselectedAddonWAD && mapindex+8 < lastselectedAddonWAD.maps.length-1){ 
       mapindex++;
@@ -39,8 +41,10 @@ let {
       soundRestart(0);
     }
     // else lastselectedAddonWAD is undefined, so no AddonWAD was filtered as selected but a GamesWAD is valid. 
-    if (lastselectedAddonWAD == undefined && mapindex+8 < gamewads[selectedGameWAD]?.maps.length-1) {
+    if (lastselectedAddonWAD == false && mapindex+8 < gamewads[selectedGameWAD]?.maps.length-1) {
       mapindex++;
+      // console.log('scrolldown');
+      
       scrollcursorLevels = Math.floor( (mapindex+6) / (gamewads[selectedGameWAD].maps.length/7))
 
       soundRestart(0);
@@ -54,7 +58,7 @@ let {
 			<div class="border-outerhoriz-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {2} / span 15"></div>
 			<div class="border-outervertic-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {2} / span 15"></div>
 
-			<div class="h1" style="z-index:10; grid-column: 7 / 45; grid-row: {3}">Select Level <span style="color: var(--text);"> { lastselectedAddonWAD?.entry || gamewads[selectedGameWAD]?.entry} </span> </div>
+			<div class="h1" style="z-index:10; overflow: clip; white-space: nowrap;  grid-column: 7 / 45; grid-row: {3}">Select Level <span style="color: var(--text);"> { lastselectedAddonWAD?.entry || gamewads[selectedGameWAD]?.entry} </span> </div>
 
 			<div class="border-horizontal-popup" style="z-index: 10; grid-column: 6 / 46; grid-row: {4} / span 1"></div>
             <!-- SCROLL BUTTONS FOR MAPS -->
@@ -76,7 +80,7 @@ let {
                     {#each Array(9) as rowMap, i}
                     <button class="h" style="text-align:left; z-index: 10; grid-column: 7 / 44; grid-row: {5+i}"  onclick="{()=> {map =  lastselectedAddonWAD.maps[mapindex+i]; neuMods.save('map', map); soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownMaps() : scrollupMaps()}">{lastselectedAddonWAD.maps[mapindex+i]}</button>
                     {/each}
-                            {:else if gamewads[selectedGameWAD]}
+        {:else if gamewads[selectedGameWAD]}
                     {#each Array(9) as rowMap, i}
                     <button class="h" style="text-align:left; z-index: 10; grid-column: 7 / 44; grid-row: {5+i}"  onclick="{()=> {map =  gamewads[selectedGameWAD].maps[mapindex+i]; neuMods.save('map', map); soundRestart(2);}}" onwheel="{e=>e.deltaY > 0 ? scrolldownMaps() : scrollupMaps()}"> {gamewads[selectedGameWAD].maps[mapindex+i]}</button>
                     {/each}
@@ -87,5 +91,5 @@ let {
 			
 
 <style>
-
+ 
 </style>

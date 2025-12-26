@@ -2,7 +2,6 @@
 // @ts-nocheck
 // TODO 
 // add custom command line arguments (already in chocolate doom implemented via flags)
-// change shared flags of gzdoom and zandronum, make them individual
 // flags support odamex
 // scrolllists for flags, presets
 // gzdoom deathmatch defaults checken
@@ -11,6 +10,9 @@
 // permissions check evtl. bei ./downloads path erstellung? wegen linux und mac?
 // change gamewads and addonwads to states and not derived. use functions to update gamewads and addonwads
 // chocolate doom chosen flags, then change to deathmatch button makes error
+// support config files
+// hide deh files dependant if exmy wad or map wad is selected
+// button to clear selected list
 
 import { onMount } from 'svelte';
 
@@ -330,30 +332,39 @@ let selectedaddonwads = $state([]);
 
 function updateSelectedaddonwads() {
   let selected = addonwads.filter(e=> e.selected);
-  selectedaddonwads = selectedaddonwads.filter(e=>e.selected);
-  for (let i = 0; i < selected.length; i++) {
-    //if a new addonwad is selected in the addon list, and its not alredy in the selectedaddonwads order. then add it to the array
-    //this keeps the order of already added wads to the order list
-    const a = selectedaddonwads.findIndex(e=> e.entry?.toLowerCase() == selected[i].entry?.toLowerCase());
-    if (a == -1)
-      selectedaddonwads.push(selected[i]);
+  if (selected != -1)
+  {
+    if (selectedaddonwads.length > 0)
+    {
+      selectedaddonwads = selectedaddonwads.filter(e=>e.selected);
+      for (let i = 0; i < selected.length; i++) {
+        //if a new addonwad is selected in the addon list, and its not alredy in the selectedaddonwads order. then add it to the array
+        //this keeps the order of already added wads to the order list
+        const a = selectedaddonwads.findIndex(e=> e.entry?.toLowerCase() == selected[i].entry?.toLowerCase());
+        if (a == -1)
+          selectedaddonwads.push(selected[i]);
+      }
+    } else {
+      selectedaddonwads = selected;
+    }
+
   }
 }
-  // $inspect('selectedaddonwads: ', selectedaddonwadsa);
+  $inspect('selectedaddonwads: ', selectedaddonwads);
 
 
 let addonwads =  $derived.by(()=>
 {
   //choose the addon wads woth same MapName Format like the GameWad has. 
   //if the file is a DEH or PK3 then also inlude it always!
-  let mapname = gamewads[selectedGameWAD]?.maps[0];
+  let mapname = gamewads[selectedGameWAD]?.maps && gamewads[selectedGameWAD]?.maps[0];
   let alladdonwads = wadcollection.filter(e=> !e.iwad && !e.iwadfake);
   // return alladdonwads; //used for other addonwads list filter. grey out addon wads via checkmapformat()
   // or this method: dont show addon wads incompatible map format at all:...
   let wads = []
   for (const element of alladdonwads) { 
     //inlude DEH and PK3 always:
-    if (element.maps.length==0) wads.push(element);
+    if (element.maps == undefined || element.maps?.length == 0) wads.push(element);
     else
     {
       //Include only MAPXX format addonwads when gamwad is also MAPXX format.
@@ -411,16 +422,16 @@ dmflags = [
   {port:'GZDoom', cvar: 'dmflags', value: 4, name: '(DM) Weapons Stay', deathmatch:1, default: false, selected: false  },
   {port:'GZDoom', cvar: 'dmflags', value: 128, name: '(DM) Respawn farthest away', deathmatch:1, default: false, selected: false  },
   {port:'GZDoom', cvar: 'dmflags', value: 4096, name: 'No monsters', default: false, selected: false  },
-  {port:'GZDoom', cvar: 'dmflags', value: 33554432, name: '(coop) Keep keys ', deathmatch:0, default: true, selected: true  },
-  {port:'GZDoom', cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons ', deathmatch:0, default: true, selected: true },
+  {port:'GZDoom', cvar: 'dmflags', value: 33554432, name: '(coop) Lose keys on death', deathmatch:0, default: false, selected: false  },
+  {port:'GZDoom', cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons', deathmatch:0, default: false, selected: false },
 
   {port:'Zandronum', cvar: 'dmflags', value: 16384, name: 'Items respawn', default: false, selected: false  },
   {port:'Zandronum', cvar: 'dmflags', value: 65536, name: 'Allow jump', default: true, selected: true  },
   {port:'Zandronum', cvar: 'dmflags', value: 4, name: '(DM) Weapons Stay', deathmatch:1, default: false, selected: false  },
   {port:'Zandronum', cvar: 'dmflags', value: 128, name: '(DM) Respawn farthest away', deathmatch:1, default: false, selected: false  },
   {port:'Zandronum', cvar: 'dmflags', value: 4096, name: 'No monsters', default: false, selected: false  },
-  {port:'Zandronum', cvar: 'dmflags', value: 33554432, name: '(coop) Keep keys ', deathmatch:0, default: true, selected: true  },
-  {port:'Zandronum', cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons ', deathmatch:0, default: true, selected: true },
+  {port:'Zandronum', cvar: 'dmflags', value: 33554432, name: '(coop) Lose keys on death', deathmatch:0, default: false, selected: false  },
+  {port:'Zandronum', cvar: 'dmflags', value: 2097152, name: '(coop) No Deathmatch weapons', deathmatch:0, default: false, selected: false },
   //dmflags2
   {port:'GZDoom', cvar: 'dmflags2', value: 134217728, name: 'Big powerups respawn', default: false, selected: false  },
   {port:'Zandronum', cvar: 'dmflags', value: 524288, name: 'Big powerups respawn', default: false, selected: false  },
@@ -474,6 +485,10 @@ let mapformatted = $derived.by( ()=>
   }
 })
 
+function resetMap()
+{
+  map = '';
+}
 
 
 function selectGameWAD(folderindex) {
@@ -536,13 +551,15 @@ function selectGameWAD(folderindex) {
 	  //level select popup should show the last wad file maps.
     updateSelectedaddonwads();
 
-    let i = selectedaddonwads?.findLastIndex(e=> e.maps.length > 0)
+    // e.maps? because DEH or BEX files have no maps array
+    let i = selectedaddonwads?.findLastIndex(e=> e.maps?.length > 0)
     // console.log(i);  
     // console.log(selectedaddonwads);
 
-    if (i != -1)
+    if (i != -1 && selectedaddonwads[i].selected)
       lastselectedAddonWAD = selectedaddonwads[i];
-    
+    else {/*selectedaddonwads = [];*/ lastselectedAddonWAD = 0}
+    // resetMap();
     console.log('last found wad in orderlist with maps: ', lastselectedAddonWAD?.entry);
   }
 
@@ -900,7 +917,7 @@ async function loadPreset(i) {
 
       <!-- START ORDER SELECTED ADDON WAD LIST -->
       {#if showorderwads}        
-            <PopupOrderwads bind:selectedaddonwads bind:folderindexOrderwads bind:scrollcursorOrderwads {clickInterval} {clearAllTimers} {updateSelectedaddonwads} />
+        <PopupOrderwads bind:selectedaddonwads bind:folderindexOrderwads bind:scrollcursorOrderwads {clickInterval} {clearAllTimers} {updateSelectedaddonwads} {resetMap} />
       {/if}
       <!-- ENDE ORDER SELECTED ADDON WAD LIST -->
 
@@ -956,7 +973,7 @@ async function loadPreset(i) {
 			<div class="h2" style="grid-column: 3 / span 13; grid-row: {17}">Map Warping</div>
 				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3} / span 16; grid-row: {18}"  onclick="{()=> {getlastselectedAddonWAD(); hideAllPopups();  showlevelselect=1; soundRestart(0);}}"> Select map...</button>
 
-				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3} / span 5; grid-row: {19}"  onclick="{0}"> Map:</button>
+				<button class="h {joingame ? "hdis" : 0}" style="text-align:left; grid-column: {3} / span 5; grid-row: {19}" > Map:</button>
 				<input style="outline: 0px ; text-align:left; grid-column: {3+5} / span 8; grid-row: {19}"  maxlength="8" bind:value={map} onchange="{()=>neuMods.save('map', map)}" />
 
 			<!-- SKILL OPTION -->

@@ -11,6 +11,7 @@ let {
     clickInterval,
     clearAllTimers,
     updateSelectedaddonwads,
+    resetMap
 
     } = $props();
 
@@ -109,13 +110,13 @@ let {
         <button class="cellupdown" style="grid-column: 47; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownOrder)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>    
 
         {#each Array(6) as rowWAD, i}
-          <div style="background-color: black; grid-column: {24} / span 22; grid-row: {4+i};">
-          </div>
+          <div style="background-color: black; overflow: hidden; color: green; grid-column: {24} / span 22; grid-row: {4+i};">
+          {selectedaddonwads[folderindexOrderwads+i]?.progress > 0 ? '░░░░░░░░░░░░░░░░░░░░░░░░░░░░' : ''}</div>
           {#if selectedaddonwads[folderindexOrderwads+i]?.progress > 0 || selectedaddonwads[folderindexOrderwads+i]?.progress == 'done'}
-            <div style="background-color: grey; grid-column: {24} / span 22; grid-row: {4+i}; width: {calcPercentSteps(selectedaddonwads[folderindexOrderwads+i]?.progress) + invert*4}%">
-            </div>
-            <div style="background-color: green; grid-column: {24} / span 22; grid-row: {4+i}; width: {calcPercentSteps(selectedaddonwads[folderindexOrderwads+i]?.progress)}%">
-            </div>
+            <div style="background-color: none; text-align: right; color:gray; grid-column: {24} / span 22; grid-row: {4+i}; width: {calcPercentSteps(selectedaddonwads[folderindexOrderwads+i]?.progress) + 4.5}%">
+            {invert > 0 ? '▓' : '░'}</div>
+            <div style="background-color: black; color:green; overflow: hidden; grid-column: {24} / span 22; grid-row: {4+i}; width: {calcPercentSteps(selectedaddonwads[folderindexOrderwads+i]?.progress)}%">
+            ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓</div>
           {/if}
           {#if selectedaddonwads[folderindexOrderwads+i]?.progress == -1}
             <div style="margin-top: 7px; height: 1px; background-color: red; grid-column: {24} / span 22; grid-row: {4+i}; width: {selectedaddonwads[folderindexOrderwads+i]?.progress}%">
@@ -126,7 +127,7 @@ let {
             ondragstart="{ (e)=>{ handleDragOrderwad(e, folderindexOrderwads+i) } }" 
             ondrop="{ (e)=>{ handleDropOrderwad(e, folderindexOrderwads+i) } }" 
             ondragover="{ (e)=>{if (selectedaddonwads[folderindexOrderwads+i]) e.preventDefault() } }"
-             onclick="{()=>{ if (selectedaddonwads[folderindexOrderwads+i]) selectedaddonwads[folderindexOrderwads+i].selected =!selectedaddonwads[folderindexOrderwads+i].selected; /*updateSelectedaddonwads();*/ soundRestart(2);}}" 
+             onclick="{()=>{ if (selectedaddonwads[folderindexOrderwads+i]) selectedaddonwads[folderindexOrderwads+i].selected =!selectedaddonwads[folderindexOrderwads+i].selected; resetMap(); /*updateSelectedaddonwads();*/ soundRestart(2);}}" 
             onwheel="{e=>e.deltaY > 0 ? scrolldownOrder() : scrollupOrder()}"
             >
               {getButtonTextOrder(folderindexOrderwads+i)}

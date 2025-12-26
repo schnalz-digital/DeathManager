@@ -1,5 +1,5 @@
 <script>
-
+import { onMount } from 'svelte';
 import { soundRestart, getZandronumServerList } from "./shared.svelte.js";
 
 let {
@@ -99,6 +99,10 @@ if (serverlist.length == 0)
     refreshTillFinished();
 }    
 
+
+onMount(() => {
+  return () => clearInterval(refreshserverstimer);
+});
 
 
 </script>
