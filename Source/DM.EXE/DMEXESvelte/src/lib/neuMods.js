@@ -85,15 +85,15 @@ export async function readFolderPaths(folderpaths) {
     return result;
 }
 
-export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, selectedaddons, joingame, joinIP, doomPort, players, deathmatch, skillactive, skill, map, addedflags) {
+export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, selectedaddonwads, joingame, joinIP, doomPort, players, deathmatch, skillactive, skill, map, addedflags) {
 
     let addonstext = "";
     let dehfile = "";
     
-    for (const element of selectedaddons) {
+    for (const element of selectedaddonwads) {
         if (element.path.toLowerCase().includes('.deh'))
             dehfile = element.path;
-        else
+        else if (element.selected)  //selectedaddonwads can have not selected wads in orderlist, so take only selected in orderlist
             addonstext += '"' + element.path + '" ';
     }
 
@@ -108,7 +108,7 @@ export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, s
         `${players > 1 && deathmatch ? selectedDoomPortFlags != 'Chocolate' ? ' +deathmatch 1 ' : ' -deathmatch ' : ''}`,
         `${players > 1 && !deathmatch ? selectedDoomPortFlags != 'Chocolate' ? ' +cooperative 1 ' : '' : ''}`,        
         `${skillactive ? ' -skill ' + skill : ''}`,
-        `${map ? ' -warp ' + map : ''}`,
+        `${['map', 'e'].some(e=>map?.toLowerCase().includes(e)) ? ' -warp ' + map : ' +map ' + map}`,
         // `${selectedDoomPortFlags == 'Zandronum' ? ' +alwaysapplydmflags 1 +sv_defaultdmflags 0 ' : ''}`,
         `${players > 1 && addedflags['dmflags'] ? ' +set dmflags ' + addedflags['dmflags'] : ''}`,
         `${players > 1 && addedflags['dmflags2'] ? ' +set dmflags2 ' + addedflags['dmflags2'] : ''}`,

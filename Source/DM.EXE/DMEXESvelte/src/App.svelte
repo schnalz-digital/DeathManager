@@ -350,7 +350,7 @@ function updateSelectedaddonwads() {
 
   }
 }
-  $inspect('selectedaddonwads: ', selectedaddonwads);
+  // $inspect('selectedaddonwads: ', selectedaddonwads);
 
 
 let addonwads =  $derived.by(()=>
@@ -396,18 +396,19 @@ function checkMapformat(wad) {
 }
 */
 
+//TODO --better flags logic by deathmatch or coop preselect
 function changeDMFlagDefaults() {
   let a = dmflags.find(e=>e.value == 4 && e.port == selectedDoomPortFlags);
-  a.selected = true;
+  a ? a.selected = true : 0;
   
   a = dmflags.find(e=>e.value == 4096 && e.port == selectedDoomPortFlags);
-  a.selected = true;
+  a ? a.selected = true : 0;
 
   a = dmflags.find(e=>e.value == 16384 && e.port == selectedDoomPortFlags);
-  a.selected = true;
+  a ? a.selected = true : 0;
 
   a = dmflags.find(e=>e.value == 128 && e.port == selectedDoomPortFlags);
-  a.selected = true;
+  a ? a.selected = true : 0;
 }
 
 function resetFlagDefaults() {
@@ -483,6 +484,9 @@ let mapformatted = $derived.by( ()=>
       m = m.replaceAll('M', ' ');      
       return m;
   }
+  //for custom mapnames return the pure mapname, will be used in startgame as +map and NOT -warp
+  if (map.toLowerCase().includes('.wad'))
+  return map.slice(0, -4);
 })
 
 function resetMap()
