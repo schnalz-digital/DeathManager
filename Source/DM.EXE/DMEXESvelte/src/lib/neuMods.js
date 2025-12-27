@@ -61,7 +61,7 @@ export async function readFolderPaths(folderpaths) {
                                 element.maps = wadcontent.maps;
                                 //filter Hexen Deathkings of the citadel Addon WAD which is falsy an IWAD but is an Addon to Hexen.wad
                                 if (element.entry.toLowerCase().includes('hexdd')) element.iwad = false;
-                            }else if ( ['.pk3', '.pk7', 'zip'].some(e => element.entry.toLowerCase().includes(e)) )
+                            }else if ( ['.pk3', 'zip'].some(e => element.entry.toLowerCase().includes(e)) )
                             {
                                 let maplist = await readZipFast(element.path);
                                 element.iwad = false;
@@ -85,10 +85,31 @@ export async function readFolderPaths(folderpaths) {
     return result;
 }
 
+//Map name formatted  MAPXX to XX for -warp XX command
+//or ExMy formatted to x y for -warp x y 
+let mapformatted = (map)=>
+{
+    //an object is returned to mark custom wadnames ie. in pk3 files and use +map command instead -warp
+    if (map == false) return {};
+    map = map.toLowerCase();
+    if (map.includes('map')) return {map: map.slice(3,5), customname:0}
+    if (map.includes('e') && map.includes('m')) {
+        let m = map.replaceAll('e', ' '); 
+        m = m.replaceAll('m', ' ');      
+        return {map: m, customname:0};
+    }
+    //for custom mapnames return the pure mapname, will be used in startgame as +map and NOT -warp
+    if (map.includes('.wad'))
+    return {map: map.slice(0, -4), customname: 1 };
+}
+
 export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, selectedaddonwads, joingame, joinIP, doomPort, players, deathmatch, skillactive, skill, map, addedflags) {
 
     let addonstext = "";
     let dehfile = "";
+    let mapobj = mapformatted(map);
+    // console.log(map);
+    
     
     for (const element of selectedaddonwads) {
         if (element.path.toLowerCase().includes('.deh'))
@@ -108,8 +129,7 @@ export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, s
         `${players > 1 && deathmatch ? selectedDoomPortFlags != 'Chocolate' ? ' +deathmatch 1 ' : ' -deathmatch ' : ''}`,
         `${players > 1 && !deathmatch ? selectedDoomPortFlags != 'Chocolate' ? ' +cooperative 1 ' : '' : ''}`,        
         `${skillactive ? ' -skill ' + skill : ''}`,
-        `${['map', 'e'].some(e=>map?.toLowerCase().includes(e)) ? ' -warp ' + map : ' +map ' + map}`,
-        // `${selectedDoomPortFlags == 'Zandronum' ? ' +alwaysapplydmflags 1 +sv_defaultdmflags 0 ' : ''}`,
+        `${mapobj.customname == 0 ? ' -warp ' + mapobj.map : mapobj.customname == 1 ? ' +map ' + mapobj.map : ''}`,    
         `${players > 1 && addedflags['dmflags'] ? ' +set dmflags ' + addedflags['dmflags'] : ''}`,
         `${players > 1 && addedflags['dmflags2'] ? ' +set dmflags2 ' + addedflags['dmflags2'] : ''}`,
         `${players > 1 && addedflags['dmflags3'] ? ' +set dmflags3 ' + addedflags['dmflags3'] : ''}`,
@@ -353,7 +373,7 @@ async function readZipFast(path) {
     return maplist;
 
   } catch (err) {
-    console.error("Fast Read Error:", err);
+    console.error("Fast Read Error: ", path, err);
   }
 }
 

@@ -9,10 +9,11 @@
 // unknown doomports use flags of gzdoom?
 // permissions check evtl. bei ./downloads path erstellung? wegen linux und mac?
 // change gamewads and addonwads to states and not derived. use functions to update gamewads and addonwads
-// chocolate doom chosen flags, then change to deathmatch button makes error
 // support config files
 // hide deh files dependant if exmy wad or map wad is selected
 // button to clear selected list
+// add wad download https://www.quaddicted.com/files/idgames/levels/doom2/ folders a-c ...
+// pk7(seems 7zip) support read folder structure 
 
 import { onMount } from 'svelte';
 
@@ -398,16 +399,30 @@ function checkMapformat(wad) {
 
 //TODO --better flags logic by deathmatch or coop preselect
 function changeDMFlagDefaults() {
-  let a = dmflags.find(e=>e.value == 4 && e.port == selectedDoomPortFlags);
+  let a = dmflags.find(e=>e.value == 4 && e.port == 'Zandronum');
   a ? a.selected = true : 0;
-  
-  a = dmflags.find(e=>e.value == 4096 && e.port == selectedDoomPortFlags);
-  a ? a.selected = true : 0;
-
-  a = dmflags.find(e=>e.value == 16384 && e.port == selectedDoomPortFlags);
+  a = dmflags.find(e=>e.value == 4 && e.port == 'GZDoom');
   a ? a.selected = true : 0;
 
-  a = dmflags.find(e=>e.value == 128 && e.port == selectedDoomPortFlags);
+  a = dmflags.find(e=>e.value == 4096 && e.port == 'Zandronum');
+  a ? a.selected = true : 0;
+  a = dmflags.find(e=>e.value == 4096 && e.port == 'GZDoom');
+  a ? a.selected = true : 0;
+
+  a = dmflags.find(e=>e.value == 16384 && e.port == 'Zandronum');
+  a ? a.selected = true : 0;
+  a = dmflags.find(e=>e.value == 16384 && e.port == 'GZDoom');
+  a ? a.selected = true : 0;
+
+  a = dmflags.find(e=>e.value == 128 && e.port == 'Zandronum');
+  a ? a.selected = true : 0;
+  a = dmflags.find(e=>e.value == 128 && e.port == 'GZDoom');
+  a ? a.selected = true : 0;
+
+  a = dmflags.find(e=>e.value == '-nomonsters' && e.port == selectedDoomPortFlags);
+  a ? a.selected = true : 0;
+
+  a = dmflags.find(e=>e.value == '-altdeath' && e.port == selectedDoomPortFlags);
   a ? a.selected = true : 0;
 }
 
@@ -473,21 +488,6 @@ function calcAddedFlags() {
 }
 // $inspect(addedflags).with(console.trace);
 
-
-//Map name formatted  MAPXX to XX for -warp XX command
-//or ExMy formatted to x y for -warp x y 
-let mapformatted = $derived.by( ()=>
-{
-  if (map.includes('MAP')) return map.slice(3,5)
-  if (map.includes('E')) {
-      let m = map.replaceAll('E', ' '); 
-      m = m.replaceAll('M', ' ');      
-      return m;
-  }
-  //for custom mapnames return the pure mapname, will be used in startgame as +map and NOT -warp
-  if (map.toLowerCase().includes('.wad'))
-  return map.slice(0, -4);
-})
 
 function resetMap()
 {
@@ -985,7 +985,7 @@ async function loadPreset(i) {
 				<input style="outline: 0px ; text-align:left; grid-column: {3+27+10} / span 3; grid-row: {18}" maxlength="1" min="1" max="5" type="number" bind:value={skill} />
 				<div class="h5 {joingame ? "hdis" : 0}" style="grid-column: {3+27+10+4} / span 5; grid-row: {18}">[1-5]</div>
 
-			<button class="go" style="grid-column: 43 / span 5; grid-row: {rows}" onclick="{()=>{ soundRestart(1); neuMods.startGame(selectedDoomPortFlags, doomPortpath.fullpath, gamewads[selectedGameWAD]?.path , selectedaddonwads, joingame, joinIP, doomNetPort, players, deathmatch, skillactive, skill, mapformatted, addedflags); /*clearServerListPWADS()*/ } }">Go!</button>  
+			<button class="go" style="grid-column: 43 / span 5; grid-row: {rows}" onclick="{()=>{ soundRestart(1); neuMods.startGame(selectedDoomPortFlags, doomPortpath.fullpath, gamewads[selectedGameWAD]?.path , selectedaddonwads, joingame, joinIP, doomNetPort, players, deathmatch, skillactive, skill, map, addedflags); /*clearServerListPWADS()*/ } }">Go!</button>  
 
 			<!-- POPUP LEVEL SELECT -->
 			{#if showlevelselect}
@@ -1201,6 +1201,10 @@ async function loadPreset(i) {
 
 :global(button:active) {
 	color: var(--bg-selected);
+}
+
+:global(button:hover) {
+	color: var(--border);
 }
 
 .y {
