@@ -3,7 +3,7 @@
 // TODO 
 // add custom command line arguments (already in chocolate doom implemented via flags)
 // flags support odamex
-// scrolllists for flags, presets
+// scrolllists for flags, presets (more than 8 presets support)
 // gzdoom deathmatch defaults checken
 // zandronum register master server und broadcast als command line dazu
 // unknown doomports use flags of gzdoom?
@@ -14,6 +14,10 @@
 // button to clear selected list
 // add wad download https://www.quaddicted.com/files/idgames/levels/doom2/ folders a-c ...
 // pk7(seems 7zip) support read folder structure 
+// support text files
+// after download wad read the mapnames so level select shows the maps
+// support -server function for all chocolate ports?
+// support for all other unknown ports the zandronum presets for connect vs join command
 
 import { onMount } from 'svelte';
 
@@ -28,9 +32,45 @@ import PopupPresets from "./lib/popupPresets.svelte";
 import PopupMaps from "./lib/popupMaps.svelte";
 import PopupOrderwads from "./lib/popupOrderwads.svelte";
 
+import Snow from "./lib/snow.svelte";
+
+  onMount(() => {
+    document.addEventListener('curlProgress', function(e) {
+      // console.log(addonwads);
+      // console.log(e.detail.filename, e.detail.progress);
+      let i = selectedaddonwads.findIndex(el=>el.entry == e.detail.filename)
+      if (i != -1)
+      {
+        selectedaddonwads[i].progress = e.detail.progress;
+
+        if (e.detail.progress == 'done' )
+        {
+          selectedaddonwads[i].path = e.detail.path;
+
+          wadcollection.push(selectedaddonwads[i]);
+          //sort the new downloaded wad for addonwads list
+          wadcollection.sort((a, b) => a.entry.toLowerCase() > b.entry.toLowerCase() ? 1 : a.entry.toLowerCase() == b.entry.toLowerCase() ? a.dupl=1 : -1);
+
+          //timeout damit man noch grünen download balken sehen kann bei kleinen dateien
+          setTimeout(() => {
+            selectedaddonwads[i].progress = 0;
+            selectedaddonwads[i].missing = 0;
+            selectedaddonwads[i].download = 0;
+          }, 500);
+        }
+      }
+      else console.log('download filename not found in addonwads');
+    });
+    
+    return () => {
+      document.removeEventListener('curlProgress', ()=>{});
+    };
+  });
+
+  let textfile = $state('');
+  let showtxt = $state(0);
 
 $effect(async () => {
-  // neuMods.testpk3();
   pupblicIP = await getIP();
   joinIP = await neuMods.getLocalIP();
   //load all variables
@@ -63,18 +103,6 @@ $effect(async () => {
   if (tempdmflags) 
   {
     testloadedDMFlags(tempdmflags);
-
-    // let compareflags =  JSON.parse(JSON.stringify(tempdmflags));
-    // let missingflag = 0;
-    // for (let i = 0; i < dmflags.length; i++) {
-    //   let found = compareflags.some(e=> e.cvar == dmflags[i].cvar && e.value == dmflags[i].value && e.name == dmflags[i].name && dmflags[i].default == e.default)
-    //   if (found == false) 
-    //   {missingflag = 1; break;}
-    // }
-    // if (missingflag) 
-    //   console.log('old saved dmflags object version');
-    // else
-    //   dmflags = JSON.parse(JSON.stringify(tempdmflags));
   }
 
   //then calc the correct flags for addedflags variable for commandline.
@@ -82,34 +110,6 @@ $effect(async () => {
 
   presets = await neuMods.load('presets');
   if (!presets) presets = [];
-
-
-  document.addEventListener('curlProgress', function(e) {
-    // console.log(addonwads);
-    // console.log(e.detail.filename, e.detail.progress);
-    let i = selectedaddonwads.findIndex(el=>el.entry == e.detail.filename)
-    if (i != -1)
-    {
-      selectedaddonwads[i].progress = e.detail.progress;
-
-      if (e.detail.progress == 'done' )
-      {
-        selectedaddonwads[i].path = e.detail.path;
-
-        wadcollection.push(selectedaddonwads[i]);
-        //sort the new downloaded wad for addonwads list
-        wadcollection.sort((a, b) => a.entry.toLowerCase() > b.entry.toLowerCase() ? 1 : a.entry.toLowerCase() == b.entry.toLowerCase() ? a.dupl=1 : -1);
-
-        //timeout damit man noch grünen download balken sehen kann bei kleinen dateien
-        setTimeout(() => {
-          selectedaddonwads[i].progress = 0;
-          selectedaddonwads[i].missing = 0;
-          selectedaddonwads[i].download = 0;
-        }, 500);
-      }
-    }
-    else console.log('download filename not found in addonwads');
-  });
 
 })
 
@@ -136,9 +136,9 @@ function testloadedDMFlags(tempdmflags) {
 
   let scale = $derived.by( () => {
     if (vview/hview >= 4/3)       //wichtig falls window horizontal breiter als vertikal, dann bastel scalefaktor nur mit höhe
-      return (hview / hwindow -0.1);
+      return (hview / hwindow -0.2);
     else                          //ansonsten nimm scalefaktor aus den breitenwerten
-      return (vview / vwindow -0.1);
+      return (vview / vwindow -0.2);
   });
 
   //der scheiss ist, weil transform scale bei weniger als 400x300 pixeln (so groß ist das center window)
@@ -264,6 +264,7 @@ async function readWadFolders(presetwadcollection=[]) {
   else
     tempwadcollection = await neuMods.load('wadcollection');
   if (tempwadcollection)
+  {
     for (let i = 0; i < tempwadcollection.length; i++) {
       let entry = tempwadcollection[i].entry;
       let path = tempwadcollection[i].path;
@@ -276,7 +277,8 @@ async function readWadFolders(presetwadcollection=[]) {
            wadcollection[f].iwadfake = tempwadcollection[i].iwadfake ;
         }
     }
-
+  }
+  updateSelectedaddonwads();
 }
 
 
@@ -364,18 +366,22 @@ let addonwads =  $derived.by(()=>
   // or this method: dont show addon wads incompatible map format at all:...
   let wads = []
   for (const element of alladdonwads) { 
-    //inlude DEH and PK3 always:
-    if (element.maps == undefined || element.maps?.length == 0) wads.push(element);
-    else
+    //exclude txt files in addonwadslist
+    if (!element.path.toLowerCase().includes('.txt'))
     {
-      //Include only MAPXX format addonwads when gamwad is also MAPXX format.
-      if (mapname?.includes('MAP') && element.maps[0].includes('MAP'))    //mapname?... important because mapname can be undefined if no gamewads exist yet.
-        wads.push(element);
-      //otherwise include ExMy Map Format ADdons like Doom1
-      else if (mapname?.includes('E') && element.maps[0].includes('E'))   //mapname?... important because mapname can be undefined if no gamewads exist yet.
-        wads.push(element);
-      else if (!mapname)   //if iwadfake is selected, include all addonwads
-        wads.push(element);
+      //inlude DEH and PK3 always:
+      if (element.maps == undefined || element.maps?.length == 0) wads.push(element);
+      else
+      {
+        //Include only MAPXX format addonwads when gamwad is also MAPXX format.
+        if (mapname?.includes('MAP') && element.maps[0].includes('MAP'))    //mapname?... important because mapname can be undefined if no gamewads exist yet.
+          wads.push(element);
+        //otherwise include ExMy Map Format ADdons like Doom1
+        else if (mapname?.includes('E') && element.maps[0].includes('E'))   //mapname?... important because mapname can be undefined if no gamewads exist yet.
+          wads.push(element);
+        else if (!mapname)   //if iwadfake is selected, include all addonwads
+          wads.push(element);
+      }
     }
   }
   return wads;
@@ -463,9 +469,9 @@ let selectedDoomPortFlags = $state('GZDoom');
 
 //change for dmflags doomport tabs in flags menu. try to preselect depends on filename of port.
 function setSelectedDoomPortFlags() {
-  if (doomPortpath.name.toLowerCase().includes('gzdoom')) selectedDoomPortFlags = 'GZDoom';
+  if (['gzdoom', 'zdoom', 'uzdoom'].some( e=>doomPortpath.name.toLowerCase().includes('gzdoom') ) ) selectedDoomPortFlags = 'GZDoom';
   if (doomPortpath.name.toLowerCase().includes('zandron')) selectedDoomPortFlags = 'Zandronum';
-  if (doomPortpath.name.toLowerCase().includes('chocol')) selectedDoomPortFlags = 'Chocolate';
+  if (['chocol', 'crispy', 'woof', 'rude'].some( e=>doomPortpath.name.toLowerCase().includes(e) ) ) selectedDoomPortFlags = 'Chocolate';
   if (doomPortpath.name.toLowerCase().includes('odamex')) selectedDoomPortFlags = 'odamex';
 }
 
@@ -716,7 +722,7 @@ async function loadPreset(i) {
     players= presets[i].players;
     deathmatch= presets[i].deathmatch;
 
-    tempdmflags= JSON.parse(JSON.stringify(presets[i].dmflags));
+    let tempdmflags= JSON.parse(JSON.stringify(presets[i].dmflags));
     if (tempdmflags) 
     {
       testloadedDMFlags(tempdmflags);
@@ -815,8 +821,45 @@ async function loadPreset(i) {
     showserverlist = 0;
     showdeathmatchflags = 0;
     showpresets = 0;
+    showtxt = 0;
   }
 
+//Map name formatted  MAPXX to XX for -warp XX command
+//or ExMy formatted to x y for -warp x y 
+let mapformatted = (map)=>
+{
+    //an object is returned to mark custom wadnames ie. in pk3 files and use +map command instead -warp
+    if (map == false) return {};
+    map = map.toLowerCase();
+    if (map.includes('map')) return {map: map.slice(3,5), customname:0}
+    if (map.includes('e') && map.includes('m')) {
+        let m = map.replaceAll('e', ' '); 
+        m = m.replaceAll('m', ' ');      
+        return {map: m, customname:0};
+    }
+    //for custom mapnames return the pure mapname, will be used in startgame as +map and NOT -warp
+    if (map.includes('.wad'))
+    return {map: map.slice(0, -4), customname: 1 };
+}
+
+async function findTextFile(wadpath) {
+  // only allow dbl click textfile find when the game wad is clicked. (NOT .DEH, .BEX files)
+    if (['.wad', '.iwad', '.pk3', '.zip', '.pk7'].some(e => wadpath.toLowerCase().includes(e)))
+    {
+      let parts = await neuMods.getPathParts(wadpath);
+      // console.log(parts);
+      let find = parts.parentPath.toLowerCase() + '/' + parts.stem.toLowerCase() + '.txt';
+      let i = wadcollection.findIndex(e=>e.path.toLowerCase() == find );
+      if (i != -1)
+      {
+        let txt = await neuMods.readTXT(wadcollection[i].path);
+        let txtobj = {txt, wad: parts.filename}
+        return txtobj;
+      }
+             
+    }
+    return '';
+}
 
 // $inspect('draggamewad: ', draggamewad);
 // $inspect('dragaddonwad: ', dragaddonwad);
@@ -830,20 +873,31 @@ async function loadPreset(i) {
 // $inspect('addonwads: ',addonwads);
 // $inspect('gamewads: ',gamewads);
 
+
+
 </script>
 
 <svelte:window onblur="{()=>clearAllTimers()}" onmouseout="{()=>clearAllTimers()}" onmouseleave="{()=>clearAllTimers()}" onmouseup="{()=>clearAllTimers()}" />
 
-<main>
+<main style="overflow:hidden;">
+<Snow {scale}/>
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div class="center"  bind:clientHeight="{hview}" bind:clientWidth="{vview}" style="display: grid;  height:100vh;">
-
+        
     <div class="scale" onmousemove="{e=>{calcPixelCurser(e)}}" style="display: flex; justify-self: center; align-self: center; transform:translate({left}px,{top}px) scale({scale});">
-
-		<div class="cell" style="z-index: 400;" style:left="{cursorleft}px"  style:top="{cursortop}px"> </div>
+    <!-- Command line preview -->
+    <div style="font-size:x-small; position: fixed; color:white; top:-16px; overflow: clip; white-space: nowrap;">
+      C:\>{doomPortpath.name.toUpperCase()}.EXE 
+      {players > 1 && !joingame ? selectedDoomPortFlags == 'Chocolate' ? ' -server ' + players : ' -host ' + players : ''}
+      {gamewads.length ? '-iwad' : ''} {gamewads[selectedGameWAD]?.entry} 
+      {mapformatted(map).customname ? '+map ' + mapformatted(map).map : ''} {mapformatted(map).customname == 0 ? '-warp ' + mapformatted(map).map : ''}
+      {selectedaddonwads.length ? '-file' : ''} {selectedaddonwads?.map(e=>e.entry).join(' ')}
+    </div>  
+		
+    <div class="cell" style="z-index: 400;" style:left="{cursorleft}px"  style:top="{cursortop}px"> </div>
 
 		<div class="window" style="grid-template-columns: repeat({cols}, 8px); grid-template-rows: repeat({rows}, 16px);">
-			
+		
 			<div class="border-outer"></div>
 			<div class="border-inner"></div>
 
@@ -853,7 +907,7 @@ async function loadPreset(i) {
 			<div class="border-horizontal" style="grid-column: 2 / 50; grid-row: {3}"></div>
 			<div class="h2" style="grid-column: 3 / 12; grid-row: {3}">Game WAD</div>
 			<button class="h4" style="grid-column: 13 / span 1; grid-row: {3}" onmousedown="{()=>  {soundRestart(0);}}" onclick="{async ()=>{hideAllPopups(); showwadfolders=1;}}">+</button>
-
+	
 			<!-- START GAME WAD Auswahl -->
 			<button class="cellupdown" style="grid-column: 19; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupGameWAD)}}" onmouseleave="{()=>clearAllTimers()}">↑</button>
 				<div class="cellgray" style="grid-column:  19; grid-row: {4+1} / {4+5}"> 
@@ -871,7 +925,7 @@ async function loadPreset(i) {
         draggable="{!gamewads[folderindex+i]?.iwad}" 
           ondragstart="{(e)=>handleDragAddonwad(e, folderindex+i)}" ondragend="{()=>dragaddonwad = 0}"
           ondrop="{(e)=>handleDropAddonwads(e)}" ondragover="{(e)=>{if (!showorderwads) dragaddonwad == 0 ? e.preventDefault() : 0}}" 
-          onclick="{()=>{selectGameWAD(folderindex+i);  soundRestart(2);}}" 
+          onclick="{()=>{selectGameWAD(folderindex+i); updateSelectedaddonwads();  soundRestart(2);}}" 
           onwheel="{e=>e.deltaY > 0 ? scrolldownGameWAD() : scrollupGameWAD()}"
           > 
             {getButtonText(folderindex+i)}
@@ -910,8 +964,10 @@ async function loadPreset(i) {
             ondragend="{()=>{  draggamewad = 0 } }"
             ondrop="{(e)=>{ handleDropgamewads(e) } }" 
             ondragover="{(e)=>{ draggamewad == 0 ? e.preventDefault() : 0 } }"
-            onclick="{()=>{ if (addonwads[folderindexAddon+i] != undefined) selectAddonWAD(folderindexAddon+i);  soundRestart(2);}}" 
+            ondblclick={async ()=>{textfile = await findTextFile(addonwads[folderindexAddon+i].path); if (textfile) showtxt=1;}}
+            onclick="{()=>{ if (addonwads[folderindexAddon+i] != undefined) selectAddonWAD(folderindexAddon+i); updateSelectedaddonwads();  soundRestart(2);}}" 
             onwheel="{e=>e.deltaY > 0 ? scrolldownAddons() : scrollupAddons()}"
+            
             >
               {getButtonTextAddon(folderindexAddon+i)}
           </button>
@@ -961,7 +1017,7 @@ async function loadPreset(i) {
 							
 				<button class="h" style="text-align:left; grid-column: {3} / span 10; grid-row: {15}"  onclick="{()=> {joingame = 1; soundRestart(2);}}">(<span class="y">{joingame ? '•' : ' '}</span>) Join</button>
 				<input style="outline: 0px ; text-align:left; grid-column: {18} / span 15; grid-row: {15}"  maxlength="15" bind:value={joinIP} />
-        <button class="h2" style="{joingame? '' : 'color: grey;'} text-align:left; grid-column: {38} / span 11; grid-row: {16}"  onclick="{()=> {hideAllPopups(); showserverlist = 1; soundRestart(2);}}"> Server List</button>
+        <button class="h2" style="text-align:left; grid-column: {38} / span 11; grid-row: {16}"  onclick="{()=> {hideAllPopups(); showserverlist = 1; soundRestart(2);}}"> Server List</button>
 
 				<div class="h" style="text-align:left; grid-column: {3} / span 5; grid-row: {16}" >Port:</div>
 				<input style="outline: 0px ; text-align:left; grid-column: {18} / span 7; grid-row: {16}" type="number" maxlength="5" bind:value={doomNetPort} />
@@ -997,6 +1053,17 @@ async function loadPreset(i) {
       {#if showpresets}
         <PopupPresets bind:showpresets {presets} {savePreset} {loadPreset} {changePresetName} {addPreset} {deletePreset}/>
       {/if}
+
+      {#if showtxt}
+        <div class="popup" style="z-index:20; grid-column: 4 / 48; grid-row: {2} / span 15"></div>
+        <div class="border-outerhoriz-popup" style="z-index: 20; grid-column: 4 / 48; grid-row: {2} / span 15"></div>
+        <div class="border-outervertic-popup" style="z-index: 20; grid-column: 4 / 48; grid-row: {2} / span 15"></div>
+        <div class="presetbtntext" style="z-index:20; text-transform: capitalize; text-align:center; grid-column: 6 / span {textfile?.wad.length+1}; grid-row: {2}" >{textfile?.wad}</div>
+   
+        <textarea class="txt" style="z-index:20; grid-column: 5 / 47; grid-row: {3} / span 13" spellcheck="false" readonly value="{textfile?.txt}"></textarea>
+        <button class="presetbtntext" style="z-index:20; grid-column: 41 / span 6; grid-row: {16}" onclick={()=>showtxt=0} >Close</button>
+      {/if}
+
     </div>
     </div>
 
@@ -1004,6 +1071,20 @@ async function loadPreset(i) {
 </main>
 
 <style>
+  .txt {
+    font-family: 'WebPlus_IBM_VGA_8x16';
+    resize: none;
+    font-size: 0.5em;
+    border-width: 0px;
+    color: white;
+    background-color: rgb(12, 12, 12);
+    /* overflow: scroll; */
+    white-space: pre;
+    scrollbar-width: thin;
+    scrollbar-color: white grey;
+    border-radius: 0px;
+    outline: none;
+  }
 :root {
 	--bg-window: rgb(0, 0, 170);
 	--border: rgb(94, 255, 255);

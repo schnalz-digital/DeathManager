@@ -13,7 +13,40 @@ Neutralino.events.on("windowClose", () => {
     Neutralino.app.exit();
 });
 
+export async function getPathParts(path) {
+    let parts = await Neutralino.filesystem.getPathParts(path);
+    return parts;
+}
 
+export async function readTXT(textfilepath) {
+    try {   
+        let data = await Neutralino.filesystem.readBinaryFile(textfilepath);
+        // let data = await Neutralino.filesystem.readFile(textfilepath);
+        // 2. Convert to a Uint8Array (8-bit bytes)
+        let view = new Uint8Array(data);
+        // strip BOM UFT-8 tile format the first 3 bytes. this is no text and will destroy layout at start of text
+        if (view[0] === 0xEF && view[1] === 0xBB && view[2] === 0xBF) {
+            // console.log('bom');
+            view = view.slice(3);
+        }
+
+        // 3. Convert bytes back to a string manually (Extended ASCII mapping)
+        let asciiString = Array.from(view)
+            .map(byte => String.fromCharCode(byte))
+            .join('');
+
+        //these are higher extended ascii chars which manually have to be converted so the DOS charset font shows correctly
+        const charMap = {
+        'Û': '█',
+        '²': '▓',
+        '±': '▒',
+        '°': '░'
+        };
+        const result = asciiString.replace(/[Û²±°]/g, match => charMap[match]);    
+        return result;
+    }
+    catch (error) {return ''}
+}
 
 
 export async function showFileDialog() {
@@ -52,7 +85,7 @@ export async function readFolderPaths(folderpaths) {
                 let entries = await Neutralino.filesystem.readDirectory(fpath, {recursive: true});
     
                 for (const element of entries) {
-                    if (element.type == 'FILE' && ['.wad', '.pk3', '.deh', '.bex', '.iwad', '.pk7', 'zip'].some(e => element.entry.toLowerCase().includes(e)) ) 
+                    if (element.type == 'FILE' && ['.wad', '.pk3', '.deh', '.bex', '.iwad', '.pk7', 'zip', '.txt'].some(e => element.entry.toLowerCase().includes(e)) ) 
                         {
                             if ( ['.wad', '.iwad'].some(e => element.entry.toLowerCase().includes(e)) )
                             {
@@ -209,6 +242,7 @@ export async function load(key) {
 const wadhosts = [
     "https://euroboros.net/zandronum/download.php?file=",
     "https://allfearthesentinel.com/zandronum/download.php?file=",
+    "https://action.fapnow.xyz/zandronum/download.php?file="
 ]
 
 export async function download(filename, selectedwadhost = 0) {
@@ -226,8 +260,8 @@ export async function download(filename, selectedwadhost = 0) {
         let progress = 0;
         let debug = true;
 
-        let eStart = new Event("curlStart");
-        document.dispatchEvent(eStart);
+        // let eStart = new Event("curlStart");
+        // document.dispatchEvent(eStart);
         // console.log(NL_CWD, NL_PATH);
         console.log(args);
         
@@ -247,8 +281,8 @@ export async function download(filename, selectedwadhost = 0) {
             if(cmd.id == e.detail.id) {
                 switch(e.detail.action) {
                     case 'stdOut':
-                        let eData = new CustomEvent("curlData", {detail: e.detail.data});
-                        document.dispatchEvent(eData);
+                        // let eData = new CustomEvent("curlData", {detail: e.detail.data});
+                        // document.dispatchEvent(eData);
                         break;
                     case 'stdErr':
                         const m = e.detail.data.match(/\d+\.\d+/);
@@ -279,6 +313,12 @@ export async function download(filename, selectedwadhost = 0) {
                                 download(filename, selectedwadhost)
                             } else if (selectedwadhost == 1)
                             {
+                                selectedwadhost = 2;
+                                console.log('could not download, trying next URL: ', wadhosts[selectedwadhost]);
+                                download(filename, selectedwadhost)
+                            }
+                            else if (selectedwadhost == 2)
+                            {
                                 console.log('no more wad urls, no download found');
                                 //send progress -1 so the ui knows there was no download link found
                                 let eProgress = new CustomEvent("curlProgress", {detail: {progress: -1, filename }});
@@ -288,8 +328,8 @@ export async function download(filename, selectedwadhost = 0) {
                             }
  
                         }
-                        let eEnd = new CustomEvent("curlEnd", {detail: parseInt(e.detail.data)});
-                        document.dispatchEvent(eEnd);
+                        // let eEnd = new CustomEvent("curlEnd", {detail: parseInt(e.detail.data)});
+                        // document.dispatchEvent(eEnd);
                         progress = 0;
                         break;
                 }
@@ -431,4 +471,3 @@ async function getWadTypeAndMapNames(wadPath) {
 
 // Example usage:
 // getMapNamesFast('./downloads/DOOM.WAD');
-

@@ -113,7 +113,7 @@ onMount(() => {
 <div class="border-outerhoriz-popup" style="z-index: 50; grid-column: 6 / 46; grid-row: {2} / span 15"></div>
 <div class="border-outervertic-popup" style="z-index: 50; grid-column: 6 / 46; grid-row: {2} / span 15"></div>
 
-<div class="h1" style="z-index: 50; grid-column: 7 / 45; grid-row: {3}">{serverlistPort} Server Select ({searchservers.length})</div>
+<div class="h1" style="z-index: 50; text-transform: capitalize; grid-column: 7 / 45; grid-row: {3}">{serverlistPort} Server Select ({searchservers.length})</div>
 
 <div class="border-horizontal-popup" style="z-index: 50; grid-column: 6 / 46; grid-row: {5} / span 1"></div>
 
