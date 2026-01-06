@@ -122,7 +122,10 @@ https://ko-fi.com/deathmanager
 ![DeathLauncher - Order Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/select_wads_and_order.gif)
 
 - Download WADs after selecting a Server to join
-![DeathLauncher - Order Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/download_wad.gif)
+![DeathLauncher - Download Wads](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/download_wad.gif)
+
+- Double Click WADs to open the TXT File of the WAD with ASCII ART Support!
+![DeathLauncher - TextFiles](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/textviewer_asciiart.gif)
 
 ## Credits
 - [Uschiklo](https://github.com/uschiklo) (dev of current DeathManager!)
