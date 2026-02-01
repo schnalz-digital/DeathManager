@@ -4,6 +4,12 @@ import soundc from "../assets/Sound3.wav"
 
 const sound = [new Audio(sounda), new Audio(soundb), new Audio(soundc)];
 
+export function Volume(x) {
+    for (const s of sound) {
+        s.volume = x;
+    }
+}
+
 export function soundRestart(i) {
     sound[i].load();        // reset soundplay to make sound spammable
     sound[i].play();

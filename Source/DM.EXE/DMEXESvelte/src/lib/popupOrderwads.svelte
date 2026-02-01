@@ -3,37 +3,47 @@ import { onMount } from 'svelte';
 
 import * as neuMods from "./neuMods"
 import { soundRestart } from "./shared.svelte.js";
+import ScrollBar from "./scrollbar.svelte";
 
 let {
     selectedaddonwads = $bindable(),
     folderindexOrderwads = $bindable(),
     scrollcursorOrderwads = $bindable(),
-    clickInterval,
-    clearAllTimers,
-    updateSelectedaddonwads,
     resetMap
 
     } = $props();
 
 
-  function scrollupOrder() {
-    if (folderindexOrderwads > 0) {
-      folderindexOrderwads--; 
-      scrollcursorOrderwads = Math.floor( (folderindexOrderwads+1) /(selectedaddonwads.length/4))
-
-      soundRestart(0);
+  function scroll(dir, visiblelines) {
+    //calc the max top index of listview. use 0 if list is smaller than the maxlines visible
+    let maxindex = Math.max(0, selectedaddonwads.length - visiblelines);
+    // steps of the cursor of scrollbar from 0-x. steps are between the arrow buttons.
+    let scrollbarsteps = visiblelines-3;
+    if (dir == 'up')
+    {
+      if (folderindexOrderwads > 0) folderindexOrderwads--; 
+    } else if (dir == 'down')
+    {
+      if (folderindexOrderwads < maxindex) folderindexOrderwads++; 
     }
-    // console.log(addonwads.length, folderindexAddon/(addonwads.length/4));
-  }
+    if (maxindex > 0)
+      scrollcursorOrderwads =  Math.round( (folderindexOrderwads / maxindex) * scrollbarsteps )
+    soundRestart(0);
+  }  
 
-  function scrolldownOrder() {
-    if (folderindexOrderwads+5 < selectedaddonwads.length-1) {
-        folderindexOrderwads++; 
-        scrollcursorOrderwads = Math.floor( (folderindexOrderwads+5) /(selectedaddonwads.length/4) )
+  function pageScroll(dir, visiblelines) {
+    let maxindex = Math.max(0, selectedaddonwads.length - visiblelines);
+    let scrollbarsteps = visiblelines-3;
 
-        soundRestart(0);
+    if (dir == 'up') {
+        folderindexOrderwads = Math.max(0, folderindexOrderwads - visiblelines);
+    } else if (dir == 'down') {
+        folderindexOrderwads = Math.min(maxindex, folderindexOrderwads + visiblelines);
     }
-    // console.log(addonwads.length, folderindexAddon/(addonwads.length/4));  
+    if (maxindex > 0)
+      scrollcursorOrderwads =  Math.round( (folderindexOrderwads / maxindex) * scrollbarsteps )
+
+    soundRestart(0);
 }
 
   function getButtonTextOrder(folderindex) {
@@ -96,18 +106,7 @@ let {
 
         <div class="h2" style="text-align:left; padding-left: 3px; grid-column: 24 / {34 +4}; grid-row: {3}">Order WAD {selectedaddonwads.length}</div>
 
-        <button class="cellupdown" style="grid-column: 47; grid-row: {4}" onmousedown="{()=>{clickInterval(scrollupOrder)}}" onmouseleave="{()=>clearAllTimers()}">↑</button>     
-          <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div class="cellgray" style="grid-column:  47; grid-row: {4+1} / {4+5}">
-              
-              <span onmousedown="{()=>{clickInterval(scrollupOrder)}}">░</span>
-              <span onmousedown="{()=>{scrollcursorOrderwads > 1 ? clickInterval(scrollupOrder) : clickInterval(scrolldownOrder) }}">░</span>
-              <span onmousedown="{()=>{scrollcursorOrderwads > 2 ? clickInterval(scrollupOrder) : clickInterval(scrolldownOrder) }}">░</span>
-              <span onmousedown="{()=>{clickInterval(scrolldownOrder) }}">░</span>        
-          </div> 
-          <div class="cellgray" style="grid-column:  47; grid-row: {4+1+ scrollcursorOrderwads}">▓</div>
-                  <div class="cellblack" style="grid-column:  46; grid-row: {4} / {4+1+5}"></div>
-        <button class="cellupdown" style="grid-column: 47; grid-row: {4+5}" onmousedown="{()=>{clickInterval(scrolldownOrder)}}" onmouseleave="{()=>clearAllTimers()}">↓</button>    
+        <ScrollBar rowstart={4} rows={6} column={46} scrollUp={()=>scroll('up', 6)} scrollDown={()=>scroll('down', 6)} pageScrollUp={()=>pageScroll('up', 6)} pageScrollDown={()=>pageScroll('down', 6)} scrollcursorpos={scrollcursorOrderwads} />
 
         {#each Array(6) as rowWAD, i}
           <div style="background-color: black; overflow: hidden; color: green; grid-column: {24} / span 22; grid-row: {4+i};">
@@ -128,7 +127,7 @@ let {
             ondrop="{ (e)=>{ handleDropOrderwad(e, folderindexOrderwads+i) } }" 
             ondragover="{ (e)=>{if (selectedaddonwads[folderindexOrderwads+i]) e.preventDefault() } }"
              onclick="{()=>{ if (selectedaddonwads[folderindexOrderwads+i]) selectedaddonwads[folderindexOrderwads+i].selected =!selectedaddonwads[folderindexOrderwads+i].selected; resetMap(); /*updateSelectedaddonwads();*/ soundRestart(2);}}" 
-            onwheel="{e=>e.deltaY > 0 ? scrolldownOrder() : scrollupOrder()}"
+            onwheel="{e=>e.deltaY > 0 ? scroll('down', 6) : scroll('up', 6)}"
             >
               {getButtonTextOrder(folderindexOrderwads+i)}
           </button>

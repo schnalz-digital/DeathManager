@@ -21,7 +21,7 @@ export async function getPathParts(path) {
 export async function readTXT(textfilepath) {
     try {   
         let data = await Neutralino.filesystem.readBinaryFile(textfilepath);
-        // let data = await Neutralino.filesystem.readFile(textfilepath);
+        // let dataa = await Neutralino.filesystem.readFile(textfilepath);
         // 2. Convert to a Uint8Array (8-bit bytes)
         let view = new Uint8Array(data);
         // strip BOM UFT-8 tile format the first 3 bytes. this is no text and will destroy layout at start of text
@@ -34,16 +34,37 @@ export async function readTXT(textfilepath) {
         let asciiString = Array.from(view)
             .map(byte => String.fromCharCode(byte))
             .join('');
-
+        
         //these are higher extended ascii chars which manually have to be converted so the DOS charset font shows correctly
-        const charMap = {
-        'Û': '█',
-        '²': '▓',
-        '±': '▒',
-        '°': '░'
+        // this means transform from Windows-1252 to DOS (CP437)
+        const map = {
+        // Blocks & Shading
+        'Û': '█', '°': '░', '±': '▒', '²': '▓',
+        'Ü': '▄', 'ß': '▀', 'Ý': '▌', 'Þ': '▐',
+        'þ': '■',
+
+        // Single Lines
+        'Ä': '─', '³': '│', 'Ú': '┌', '¿': '┐',
+        'À': '└', 'Ù': '┘', 'Ã': '├', '´': '┤',
+        'Â': '┬', 'Á': '┴', 'Å': '┼',
+
+        // middle Dot
+        'ú': '∙',
+
+        // Double Lines
+        'Í': '═', 'º': '║', 'É': '╔', '»': '╗',
+        'È': '╚', '¼': '╝', 'Ì': '╠', '¹': '╣',
+        'Ë': '╦', 'Ê': '╩', 'Î': '╬',
+
+        // Mixed Connectors (Single/Double combinations)
+        'Ò': '╥', 'Ñ': '╤', 'Ð': '╨', 'Ï': '╧',
+        'Ö': '╓', 'Õ': '╒', 'Ô': '╙', 'Ó': '╘',
+        '×': '╫', 'Ø': '╪', 'µ': '╡', '¶': '╢',
+        '·': '╖', '¸': '╕', '½': '╜', '¾': '╛',
+        'Æ': '╞', 'Ç': '╟'
         };
-        const result = asciiString.replace(/[Û²±°]/g, match => charMap[match]);    
-        return result;
+
+        return asciiString.replace(/./g, char => map[char] || char);  
     }
     catch (error) {return ''}
 }
@@ -67,6 +88,7 @@ export async function showFolderDialogAddFolder() {
     });   
     return entry;
 }
+
 
 export async function readFolderPaths(folderpaths) {
     //add artificialy the downloads folder in dm.EXE folder, to check if there are any downloaded wads
@@ -94,6 +116,8 @@ export async function readFolderPaths(folderpaths) {
                                 element.maps = wadcontent.maps;
                                 //filter Hexen Deathkings of the citadel Addon WAD which is falsy an IWAD but is an Addon to Hexen.wad
                                 if (element.entry.toLowerCase().includes('hexdd')) element.iwad = false;
+                                //also Strife IWAD has VOICES.WAD which is declared als IWAD. exclude it
+                                if (element.entry.toLowerCase().includes('voices')) element.iwad = false;
                             }else if ( ['.pk3', 'zip'].some(e => element.entry.toLowerCase().includes(e)) )
                             {
                                 let maplist = await readZipFast(element.path);
@@ -118,51 +142,40 @@ export async function readFolderPaths(folderpaths) {
     return result;
 }
 
-//Map name formatted  MAPXX to XX for -warp XX command
-//or ExMy formatted to x y for -warp x y 
-let mapformatted = (map)=>
-{
-    //an object is returned to mark custom wadnames ie. in pk3 files and use +map command instead -warp
-    if (map == false) return {};
-    map = map.toLowerCase();
-    if (map.includes('map')) return {map: map.slice(3,5), customname:0}
-    if (map.includes('e') && map.includes('m')) {
-        let m = map.replaceAll('e', ' '); 
-        m = m.replaceAll('m', ' ');      
-        return {map: m, customname:0};
-    }
-    //for custom mapnames return the pure mapname, will be used in startgame as +map and NOT -warp
-    if (map.includes('.wad'))
-    return {map: map.slice(0, -4), customname: 1 };
-}
 
-export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, selectedaddonwads, joingame, joinIP, doomPort, players, deathmatch, skillactive, skill, map, addedflags) {
+export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, selectedaddonwads, joingame, joinIP, doomPort, players, deathmatch, skillactive, skill, mapactive, mapobj, addedflags, servername, turboactive, turbo, timeractive, timer) {
 
     let addonstext = "";
     let dehfile = "";
-    let mapobj = mapformatted(map);
-    // console.log(map);
+    // console.log(mapobj);
     
+    // console.log(selectedaddonwads);
     
     for (const element of selectedaddonwads) {
-        if (element.path.toLowerCase().includes('.deh'))
+        if (element.path.toLowerCase().includes('.deh') && element.selected)
             dehfile = element.path;
         else if (element.selected)  //selectedaddonwads can have not selected wads in orderlist, so take only selected in orderlist
             addonstext += '"' + element.path + '" ';
     }
+    // console.log(dehfile);
+    
 
     // console.log(addonstext); // chocolate doom uses -server instead of -host
     let commandarray = [
         `"${doomportpath}"`,
         ` -iwad "${gamepath}"`,
         `${addonstext ? ' -file ' + addonstext : ''}`,
-        `${dehfile ? ' -deh ' + dehfile : ''}`,
+        `${dehfile ? ' -deh ' + `"` + dehfile + `"` : ''}`,
         `${players > 1 && selectedDoomPortFlags == 'Chocolate' ? ' -server ' + ' -port ' + doomPort :
                  players > 1 ? ' -host ' + players  + ' -port ' + doomPort : ''}`,
+        `${players > 1 && selectedDoomPortFlags == 'Zandronum' ? ` +sv_broadcast 1 +sv_updatemaster 1 +sv_hostname "${servername}"` : ''}`,
+        `${players > 1 && selectedDoomPortFlags == 'Chocolate' ? ` -servername "${servername}"` : ''}`,
         `${players > 1 && deathmatch ? selectedDoomPortFlags != 'Chocolate' ? ' +deathmatch 1 ' : ' -deathmatch ' : ''}`,
         `${players > 1 && !deathmatch ? selectedDoomPortFlags != 'Chocolate' ? ' +cooperative 1 ' : '' : ''}`,        
         `${skillactive ? ' -skill ' + skill : ''}`,
-        `${mapobj.customname == 0 ? ' -warp ' + mapobj.map : mapobj.customname == 1 ? ' +map ' + mapobj.map : ''}`,    
+        `${turboactive ? ' -turbo ' + turbo : ''}`,   
+        `${timeractive ? ' -timer ' + timer : ''}`,         
+        `${mapactive && mapobj.customname == 0 ? ' -warp ' + mapobj.map : mapactive && mapobj.customname == 1 && selectedDoomPortFlags != 'Chocolate' ? ' +map ' + mapobj.map : ''}`,    
         `${players > 1 && addedflags['dmflags'] ? ' +set dmflags ' + addedflags['dmflags'] : ''}`,
         `${players > 1 && addedflags['dmflags2'] ? ' +set dmflags2 ' + addedflags['dmflags2'] : ''}`,
         `${players > 1 && addedflags['dmflags3'] ? ' +set dmflags3 ' + addedflags['dmflags3'] : ''}`,
@@ -173,7 +186,7 @@ export async function startGame(selectedDoomPortFlags, doomportpath, gamepath, s
     if (joingame)
     {
         let jointxt = `${selectedDoomPortFlags == 'GZDoom' ? '-join ' : '-connect '}`   //all ports use -connect, only GZDoom -join
-        commandline = `${doomportpath} -iwad "${gamepath}" -file ${addonstext} ${jointxt} ${joinIP}:${doomPort}`;
+        commandline = `"${doomportpath}" -iwad "${gamepath}" -file ${addonstext} -deh "${dehfile}" ${jointxt} ${joinIP}:${doomPort}`;
     } else {
         commandline = commandarray.join('');
     }
@@ -242,7 +255,7 @@ export async function load(key) {
 const wadhosts = [
     "https://euroboros.net/zandronum/download.php?file=",
     "https://allfearthesentinel.com/zandronum/download.php?file=",
-    "https://action.fapnow.xyz/zandronum/download.php?file="
+    "https://action.fapnow.xyz/zandronum/download.php?file=",
 ]
 
 export async function download(filename, selectedwadhost = 0) {
@@ -267,12 +280,18 @@ export async function download(filename, selectedwadhost = 0) {
         
         
         let path = NL_PATH; //für linux , Mac
+        let exe = '';
         if(NL_OS === 'Windows' ) {
             path = NL_CWD;
+            exe = '.exe'
         }
 
+        let per = await Neutralino.filesystem.getPermissions(path + `/extensions/curl/curl${exe}`);
+        // console.log(per);
+        if (!per.ownerAll)
+            await Neutralino.filesystem.setPermissions(path + `/extensions/curl/curl${exe}`, {ownerAll: true});
         // für mac und linux ist NL_PATH nötig, siehe neutralino js curl github plugin
-        let cmd = await Neutralino.os.spawnProcess(`"` + path + `/extensions/curl/curl" ${args}`);
+        let cmd = await Neutralino.os.spawnProcess(`"` + path + `/extensions/curl/curl${exe}" ${args}`);
         console.log(`"` + path + `/extensions/curl/curl" ${args}`);
         
         // cmd.filename = filename;
@@ -306,18 +325,13 @@ export async function download(filename, selectedwadhost = 0) {
                             let eProgress = new CustomEvent("curlProgress", {detail: {progress: 'done', filename, path: downloadpath + '/' + filename }});
                             document.dispatchEvent(eProgress);
                         } else {
-                            if (selectedwadhost == 0)
+                            if (selectedwadhost <= wadhosts.length-1)
                             {
-                                selectedwadhost = 1;
-                                console.log('could not download, trying next URL: ', wadhosts[selectedwadhost]);
-                                download(filename, selectedwadhost)
-                            } else if (selectedwadhost == 1)
-                            {
-                                selectedwadhost = 2;
+                                selectedwadhost++;
                                 console.log('could not download, trying next URL: ', wadhosts[selectedwadhost]);
                                 download(filename, selectedwadhost)
                             }
-                            else if (selectedwadhost == 2)
+                            else if (selectedwadhost >= wadhosts.length)
                             {
                                 console.log('no more wad urls, no download found');
                                 //send progress -1 so the ui knows there was no download link found
