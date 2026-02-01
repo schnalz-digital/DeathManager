@@ -42,7 +42,7 @@ let sendbytes = 0;
  */
 const requestListener = async function (req, res) {
     // Log the incoming request
-    console.log(`[${new Date().toLocaleTimeString()}] Request received: ${req.url}`);
+    console.log(`[${new Date().toLocaleString()}] Request received: from ${req.socket.remoteAddress} to ${req.url}`);
     const acceptEncoding = req.headers['accept-encoding'] || '';
 
     let encode = '';

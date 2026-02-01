@@ -281,15 +281,16 @@ async function getServerInfos(HOST, PORT) {
             // console.log(s);
             
             //prepare for ui infos like zandronum
-            s.name = s.cvars.find(e=>e.name == 'sv_hostname').value;
+            //ALWAYS use ? to prevent error if .value cant be accessed!
+            s.name = s.cvars.find(e=>e.name == 'sv_hostname')?.value;
             //odamex has only one list of all wads. 1. is odamex.wad, 2. is always the iwad, 3. and greater all pwads
-            s.iwad = s.wads[1].name;
+            s.iwad = s.wads[1]?.name;
             s.pwads = [];
             for (let i = 2; i < s.wads.length; i++) {
                 s.pwads.push(s.wads[i])
             }
             s.numPlayers = s.playercount;
-            s.maxPlayers = s.cvars.find(e=>e.name == 'sv_maxplayers').value;
+            s.maxPlayers = s.cvars.find(e=>e.name == 'sv_maxplayers')?.value;
 
             let gt = s.cvars.find(e=>e.name == 'sv_gametype');
             if (gt != undefined)
