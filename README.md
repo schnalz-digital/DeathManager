@@ -4,7 +4,7 @@
 ![Last Commit](https://img.shields.io/github/last-commit/schnalz-digital/DeathManager)
 ![Issues open](https://img.shields.io/github/issues/schnalz-digital/DeathManager)
 ![NeutralinoJS](https://img.shields.io/badge/-Neutralinojs-F89901?style=flat&logo=neutralinojs&logoColor=white)
-[![Donate](https://img.shields.io/badge/Donate-Ko--fi-F16060.svg?logo=ko-fi&logoColor=white)](https://ko-fi.com/deathmanager)
+[![Donate](https://img.shields.io/badge/Donate-Ko--fi-F16060.svg?logo=ko-fi&logoColor=white)](https://ko-fi.com/schnalz)
 [![](https://dcbadge.limes.pink/api/server/35EKJDA9Px?style=flat&compact=true)](https://discord.gg/35EKJDA9Px)
 
 DeathManager (DM) is a frontend for launching single- and multiplayer games of DOOM, Heretic and Hexen. Relive the nostalgia of 1993 with this classic launcher, designed to emulate the authentic MS-DOS experience from [id Software's DeathManager](https://doomwiki.org/wiki/DeathManager!). Now on Windows 11, macOS 15+ and Linux. 
@@ -93,7 +93,7 @@ chmod +x ./DM.EXE-linux_x64
 This project is the result of countless hours of dedication and passion. If you'd like to support our work and its future, your donation would be appreciated. Thank you!
 
 ### Ko-Fi
-https://ko-fi.com/deathmanager
+https://ko-fi.com/schnalz
 
 ### USDT (via Base network)
 > [!IMPORTANT]
@@ -105,12 +105,9 @@ https://ko-fi.com/deathmanager
 ## Screenshots
 ![DeathLauncher - UI](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-ui.png)
 
-
 ![DeathLauncher - Adding WADs folder](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-wads.png)
 
-
 ![DeathLauncher - Choosing a Map](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-maps.png)
-
 
 ![DeathLauncher - Setting DM flags](https://raw.githubusercontent.com/schnalz-digital/DeathManager/refs/heads/main/deathmanager-dm-flags.png)
 
